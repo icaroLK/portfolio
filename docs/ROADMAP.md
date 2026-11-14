@@ -6,7 +6,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 | Sprint | Name | Status |
 | --- | --- | --- |
-| 0 | Project setup | Not started |
+| 0 | Project setup | Done |
 | 1 | Models and admin | Not started |
 | 2 | Design system and layout shell | Not started |
 | 3 | Home page | Not started |
@@ -33,10 +33,10 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **You validate:**
 
-- [ ] `python manage.py runserver` opens a page that says the site is running, in Inter font
-- [ ] Changing a Tailwind class and rebuilding CSS changes the page
-- [ ] `.env` is ignored by git; `.env.example` is committed
-- [ ] README steps work on a fresh clone
+- [x] `python manage.py runserver` opens a page that says the site is running, in Inter font
+- [x] Changing a Tailwind class and rebuilding CSS changes the page
+- [x] `.env` is ignored by git; `.env.example` is committed
+- [x] README steps work on a fresh clone
 
 ## Sprint 1: Models and admin
 

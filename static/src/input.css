@@ -1,0 +1,17 @@
+/*
+  Tailwind source file. Never edit static/css/site.css by hand:
+  it is generated from this file by the Tailwind CLI (see README).
+*/
+
+@import "tailwindcss";
+
+/* Tell Tailwind where to look for class names. */
+@source "../../templates";
+@source "../../portfolio/templates";
+@source "../../contact/templates";
+
+/* Design tokens. Sprint 2 adds the full V2 palette here. */
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+}

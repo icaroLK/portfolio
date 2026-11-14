@@ -1,0 +1,14 @@
+# Web framework (5.2 is the long-term-support release)
+Django>=5.2,<5.3
+
+# Reads secrets and settings from the .env file
+django-environ>=0.14,<0.15
+
+# Serves CSS/JS/images efficiently in production
+whitenoise>=6.12,<7
+
+# Image handling for uploads and thumbnails (Sprint 1+)
+Pillow>=12,<14
+
+# Drag-and-drop ordering in the admin (Sprint 1)
+django-admin-sortable2>=2.4,<3

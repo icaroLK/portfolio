@@ -56,5 +56,5 @@ python manage.py migrate
 python manage.py seed_demo          # from Sprint 1
 python manage.py runserver
 python manage.py test
-./tailwindcss -i static/src/input.css -o static/css/site.css --watch   # from Sprint 0
+./tailwindcss -i static/src/input.css -o static/css/site.css --watch   # from Sprint 0 (Windows: .\tailwindcss.exe ...)
 ```

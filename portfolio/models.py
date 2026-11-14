@@ -8,6 +8,7 @@ where it makes sense, `is_published` (hidden from the site when off).
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
+from django.utils import dateformat
 from django.utils.text import slugify
 
 from .embeds import embed_url, validate_video_url
@@ -54,6 +55,23 @@ class ProjectQuerySet(PublishedQuerySet):
         return self.for_cards().prefetch_related("features", "gallery")
 
 
+class ExperienceQuerySet(PublishedQuerySet):
+    def for_about(self):
+        return self.published().prefetch_related("techs")
+
+
+class SkillGroupQuerySet(models.QuerySet):
+    def for_about(self):
+        """Groups with at least one skill, each with its skills loaded in one extra query."""
+        return self.filter(skills__isnull=False).distinct().prefetch_related("skills")
+
+
+def date_range(start, end):
+    """Label like "Mar 2025 – Present". An empty end date means Present."""
+    end_label = dateformat.format(end, "M Y") if end else "Present"
+    return f"{dateformat.format(start, 'M Y')} – {end_label}"
+
+
 class TypeTagQuerySet(models.QuerySet):
     def in_archive(self):
         """Tags used by at least one published, non-featured project (the Home filters)."""
@@ -74,9 +92,27 @@ class SiteSettings(TimeStampedModel):
     show_status_badge = models.BooleanField(default=True)
 
     # About
+    about_heading = models.CharField(
+        max_length=80, blank=True, help_text='About page title, e.g. "Hi, I\'m Icaro."'
+    )
     about_bio = models.TextField(blank=True)
     profile_photo = models.ImageField(
         upload_to=RandomFilename("site"), blank=True, validators=IMAGE_VALIDATORS
+    )
+    services_intro = models.CharField(
+        max_length=200, blank=True, help_text='Line under "What I can build for you".'
+    )
+    contact_heading = models.CharField(
+        max_length=80, blank=True, help_text='Contact card title, e.g. "Let\'s work together."'
+    )
+    contact_text = models.CharField(
+        max_length=200, blank=True, help_text="Short line under the contact card title."
+    )
+
+    # Contact form
+    notification_email = models.EmailField(
+        blank=True,
+        help_text="Where new contact form messages are emailed. Never shown on the site.",
     )
 
     # Links and resume
@@ -303,13 +339,17 @@ class Experience(TimeStampedModel):
     is_published = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0, db_index=True)
 
-    objects = PublishedQuerySet.as_manager()
+    objects = ExperienceQuerySet.as_manager()
 
     class Meta:
         ordering = ["order"]
 
     def __str__(self):
         return f"{self.role} at {self.company}"
+
+    @property
+    def period_display(self):
+        return date_range(self.start_date, self.end_date)
 
 
 class Education(TimeStampedModel):
@@ -336,10 +376,17 @@ class Education(TimeStampedModel):
     def __str__(self):
         return f"{self.degree}, {self.school}"
 
+    @property
+    def period_display(self):
+        """The free-text label wins when filled, otherwise the date range."""
+        return self.period_label or date_range(self.start_date, self.end_date)
+
 
 class SkillGroup(TimeStampedModel):
     name = models.CharField(max_length=80)
     order = models.PositiveIntegerField(default=0, db_index=True)
+
+    objects = SkillGroupQuerySet.as_manager()
 
     class Meta:
         ordering = ["order"]

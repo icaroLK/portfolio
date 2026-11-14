@@ -1,0 +1,41 @@
+{% comment %}
+  Contact form on the About page. Needs `form` (ContactForm) and `sent` in the context.
+  novalidate: the server checks every field and shows the same styled errors
+  in every browser, instead of each browser's own popups.
+{% endcomment %}
+{# "#contact" makes the browser land back on this card when the page shows errors. #}
+<form method="post" action="{% url 'contact:submit' %}#contact" novalidate class="flex flex-col gap-3 md:gap-3.5">
+  {% csrf_token %}
+
+  {% if sent %}
+    <p role="status" class="rounded-btn border border-status/30 bg-status/10 px-3.5 py-3 text-sm text-ink">
+      Thanks, your message was sent. I'll get back to you soon.
+    </p>
+  {% endif %}
+
+  {% if form.non_field_errors %}
+    <div role="alert" class="rounded-btn border border-error/30 bg-error/5 px-3.5 py-3 text-sm text-error">
+      {% for error in form.non_field_errors %}<p>{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}
+
+  {% for field in form.visible_fields %}
+    {% if field.name != "website" %}
+    <div class="flex flex-col gap-1.5">
+      <label for="{{ field.id_for_label }}" class="text-[13px] font-medium text-body">{{ field.label }}</label>
+      {{ field }}
+      {% if field.errors %}
+        <p id="{{ field.auto_id }}_error" class="text-[13px] text-error">{{ field.errors|join:" " }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+  {% endfor %}
+
+  {# Honeypot: moved off screen and skipped by keyboard and screen readers. Only bots fill it. #}
+  <div class="absolute -left-[9999px] size-px overflow-hidden" aria-hidden="true">
+    <label for="{{ form.website.id_for_label }}">Leave this empty</label>
+    <input type="text" name="website" id="{{ form.website.id_for_label }}" tabindex="-1" autocomplete="off">
+  </div>
+
+  <button type="submit" class="btn btn-primary mt-0.5 w-full rounded-img md:rounded-btn">Send message</button>
+</form>

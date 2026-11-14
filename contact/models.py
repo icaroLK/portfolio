@@ -1,6 +1,22 @@
+from datetime import timedelta
+
 from django.db import models
+from django.utils import timezone
 
 from portfolio.models import TimeStampedModel
+
+# Contact form rate limit: at most this many messages per IP address per hour.
+MAX_MESSAGES_PER_HOUR = 3
+
+
+class ContactMessageQuerySet(models.QuerySet):
+    def sent_in_last_hour_from(self, ip_address):
+        return self.filter(
+            ip_address=ip_address, created_at__gte=timezone.now() - timedelta(hours=1)
+        )
+
+    def limit_reached(self, ip_address):
+        return self.sent_in_last_hour_from(ip_address).count() >= MAX_MESSAGES_PER_HOUR
 
 
 class ContactMessage(TimeStampedModel):
@@ -25,6 +41,8 @@ class ContactMessage(TimeStampedModel):
     email_sent = models.BooleanField(
         default=False, help_text="Whether the notification email was delivered."
     )
+
+    objects = ContactMessageQuerySet.as_manager()
 
     class Meta:
         ordering = ["-created_at"]  # newest first

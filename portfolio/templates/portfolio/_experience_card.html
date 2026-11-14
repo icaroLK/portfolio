@@ -1,0 +1,37 @@
+{% load markdown_extras %}
+{% comment %}
+  One Experience card on the About page. Needs `experience` with techs prefetched.
+  Mobile: logo and title share the top row, dates on their own line below.
+  Desktop: the logo sits in a left column (absolute, so the text column lines up)
+  and the dates move to the right of the title.
+  "Show details" (a native <details>) only exists when `details` is filled.
+{% endcomment %}
+<article class="relative flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-[22px] md:p-8 md:pl-[106px]">
+  <div class="flex items-center gap-3 md:flex-wrap md:items-start md:justify-between md:gap-2">
+    {% include "portfolio/_logo.html" with image=experience.logo name=experience.company extra_class="md:absolute md:top-8 md:left-8" %}
+    <div class="flex flex-col gap-0.5 md:gap-[3px]">
+      <h3 class="font-display text-lg font-semibold tracking-[-0.015em] md:text-[21px]">{{ experience.role }}</h3>
+      <span class="text-sm text-body-soft md:text-[15px]">{{ experience.company }}{% if experience.location %} · {{ experience.location }}{% endif %}</span>
+    </div>
+    <span class="hidden text-[13px] text-subtle tabular-nums md:block">{{ experience.period_display }}</span>
+  </div>
+  <span class="text-xs text-subtle md:hidden">{{ experience.period_display }}</span>
+
+  <p class="text-[15px] leading-[1.6] text-body md:text-base md:leading-[1.65]">{{ experience.summary }}</p>
+
+  {% if experience.techs.all %}
+  <div class="flex flex-wrap gap-1.5">
+    {% for tech in experience.techs.all %}{% include "components/chip.html" with label=tech.name %}{% endfor %}
+  </div>
+  {% endif %}
+
+  {% if experience.details %}
+  <details class="group border-t border-divider md:mt-1.5">
+    <summary class="flex min-h-11 cursor-pointer list-none items-center text-sm font-medium [&::-webkit-details-marker]:hidden">
+      <span class="group-open:hidden">Show details ▾</span>
+      <span class="hidden group-open:inline">Hide details ▴</span>
+    </summary>
+    <div class="rich-text pb-1 text-[15px] leading-[1.65] text-body md:leading-[1.7]">{{ experience.details|markdown }}</div>
+  </details>
+  {% endif %}
+</article>

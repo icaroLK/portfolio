@@ -44,6 +44,7 @@
 
   /* Status */
   --color-status: #1F9D55;
+  --color-error: #B42318;        /* form errors (6.4:1 on white) */
 
   /* Radii: rounded-btn, rounded-img, rounded-card, rounded-card-lg (pills use rounded-full) */
   --radius-btn: 10px;

@@ -2,7 +2,20 @@ from django.conf import settings
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 
-from .models import Project, ProjectTech, Skill, Tech, TypeTag
+from contact.forms import ContactForm
+
+from .models import (
+    Education,
+    Experience,
+    Project,
+    ProjectTech,
+    Service,
+    SiteSettings,
+    Skill,
+    SkillGroup,
+    Tech,
+    TypeTag,
+)
 
 
 def home(request):
@@ -27,6 +40,26 @@ def project_detail(request, slug):
     project = get_object_or_404(Project.objects.published().for_detail(), slug=slug)
     context = {"project": project, "next_project": project.next_project()}
     return render(request, "portfolio/project_detail.html", context)
+
+
+def about(request):
+    return render_about(request, ContactForm())
+
+
+def render_about(request, form, status=200):
+    """The About page. Also used by the contact view to show a form with errors."""
+    site = SiteSettings.load()
+    # A turned-off section skips its query entirely.
+    context = {
+        "site": site,
+        "form": form,
+        "sent": request.GET.get("sent") == "1",
+        "experiences": Experience.objects.for_about() if site.show_experience else [],
+        "education": Education.objects.published() if site.show_education else [],
+        "skill_groups": SkillGroup.objects.for_about() if site.show_skills else [],
+        "services": Service.objects.published() if site.show_services else [],
+    }
+    return render(request, "portfolio/about.html", context, status=status)
 
 
 def styleguide(request):

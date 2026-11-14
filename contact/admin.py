@@ -7,9 +7,9 @@ from .models import ContactMessage
 class ContactMessageAdmin(admin.ModelAdmin):
     """Inbox: messages can be read, marked and deleted, but never edited."""
 
-    list_display = ["created_at", "name", "email", "topic", "is_read", "is_spam"]
+    list_display = ["created_at", "name", "email", "topic", "is_read", "is_spam", "email_sent"]
     list_display_links = ["created_at", "name"]
-    list_filter = ["is_read", "is_spam", "topic"]
+    list_filter = ["is_read", "is_spam", "email_sent", "topic"]
     search_fields = ["name", "email", "message"]
     date_hierarchy = "created_at"
     actions = ["mark_as_read", "mark_as_spam"]

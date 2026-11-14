@@ -1,0 +1,13 @@
+{% comment %}
+  Company or school logo square: 44 px on mobile, 52 px from 768 px.
+  Usage: {% include "portfolio/_logo.html" with image=entry.logo name=entry.school %}
+  extra_class adds classes (the experience card positions it on desktop).
+  No logo uploaded: a gray square with the first letter of the name.
+{% endcomment %}
+<div class="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-[10px] bg-placeholder md:size-[52px] md:rounded-img {{ extra_class }}">
+  {% if image %}
+    <img src="{{ image.url }}" alt="{{ name }} logo" loading="lazy" class="size-full object-contain">
+  {% else %}
+    <span class="font-display text-base font-semibold text-subtle md:text-lg" aria-hidden="true">{{ name|first|upper }}</span>
+  {% endif %}
+</div>

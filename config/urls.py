@@ -12,6 +12,8 @@ urlpatterns = [
     path(f"{settings.ADMIN_PATH}/", admin.site.urls),
     # Public pages (home, projects, about) live in the portfolio app.
     path("", include("portfolio.urls")),
+    # Contact form POST (the form itself is on the About page).
+    path("", include("contact.urls")),
 ]
 
 # In dev, Django serves uploaded files (in production Caddy does it).

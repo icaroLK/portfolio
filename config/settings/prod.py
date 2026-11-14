@@ -2,7 +2,7 @@
 Settings for the live server (icarokucha.com).
 
 The server uses this file through wsgi.py / asgi.py.
-Sprint 7 adds email, logging, 2FA and login rate limiting here.
+Sprint 7 adds logging and login rate limiting here.
 """
 
 from .base import *  # noqa: F401,F403
@@ -25,3 +25,15 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 SECURE_HSTS_PRELOAD = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])  # noqa: F405
+
+# Caddy passes the visitor's real IP in X-Forwarded-For (used by the contact rate limit).
+TRUST_X_FORWARDED_FOR = True
+
+# Contact notifications go out over SMTP (Resend or Brevo, values in .env).
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env("EMAIL_HOST", default="")  # noqa: F405
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)  # noqa: F405
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")  # noqa: F405
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")  # noqa: F405
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)  # noqa: F405
+EMAIL_TIMEOUT = 10  # seconds; a slow provider must not hang the form

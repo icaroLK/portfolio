@@ -11,7 +11,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | 2 | Design system and layout shell | Done |
 | 3 | Home page | Done |
 | 4 | Project detail page | Done |
-| 5 | About page and contact form | Not started |
+| 5 | About page and contact form | Done |
 | 6 | SEO, performance and polish | Not started |
 | 7 | Deploy and go live | Not started |
 
@@ -124,12 +124,12 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **You validate:**
 
-- [ ] About matches `docs/design/v2-about.html` and its mobile version; "Show details" works and is absent when details is empty
-- [ ] Each section toggle in Site settings hides its section
-- [ ] Sending the form shows the success message and the message appears in the admin inbox
-- [ ] Empty or invalid fields show errors and keep your input
-- [ ] A filled honeypot is silently dropped; a 4th submission in an hour is blocked
-- [ ] Refreshing after sending does not resend
+- [x] About matches `docs/design/v2-about.html` and its mobile version; "Show details" works and is absent when details is empty
+- [x] Each section toggle in Site settings hides its section
+- [x] Sending the form shows the success message and the message appears in the admin inbox
+- [x] Empty or invalid fields show errors and keep your input
+- [x] A filled honeypot is silently dropped; a 4th submission in an hour is blocked
+- [x] Refreshing after sending does not resend
 
 ## Sprint 6: SEO, performance and polish
 

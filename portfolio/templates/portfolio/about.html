@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}About · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-[920px] px-5 md:px-8">
+
+  {# --- Intro --- #}
+  <section class="flex flex-col gap-[18px] pt-11 pb-12 md:flex-row md:flex-wrap md:items-center md:gap-11 md:pt-[88px] md:pb-[72px]">
+    <div class="size-[104px] shrink-0 overflow-hidden rounded-full border-[5px] border-surface bg-placeholder shadow-[0_2px_10px_rgba(0,0,0,0.06)] md:size-[168px] md:border-[6px]">
+      {% if site.profile_photo %}
+        <img src="{{ site.profile_photo.url }}" alt="{{ site.site_name }}" class="size-full object-cover">
+      {% endif %}
+    </div>
+    <div class="flex flex-col gap-[18px] md:min-w-[300px] md:flex-1">
+      <h1 class="font-display text-[38px] leading-[1.05] font-semibold tracking-display md:text-[52px]">{{ site.about_heading|default:site.site_name }}</h1>
+      {% if site.about_bio %}
+        <div class="flex flex-col gap-4 text-base leading-[1.7] text-body-soft md:text-lg">{{ site.about_bio|linebreaks }}</div>
+      {% endif %}
+      <div class="grid grid-cols-2 gap-2.5 md:flex md:flex-wrap md:gap-3 md:pt-1">
+        {% if site.resume_pdf %}
+          <a href="{{ site.resume_pdf.url }}" class="btn btn-primary rounded-img px-3 text-sm md:rounded-btn md:px-5 md:text-[15px]"><span class="md:hidden">Resume</span><span class="hidden md:inline">Download resume</span></a>
+        {% endif %}
+        <a href="#contact" class="btn btn-secondary rounded-img px-3 text-sm md:rounded-btn md:px-5 md:text-[15px]">Contact me</a>
+      </div>
+    </div>
+  </section>
+
+  {# --- Experience (toggle in Site settings; hidden when empty) --- #}
+  {% if experiences %}
+  <section class="flex flex-col gap-4 pb-12 md:gap-6 md:pb-[72px]" aria-labelledby="experience-heading">
+    {% include "components/section_heading.html" with eyebrow="Work" title="Experience" heading_id="experience-heading" %}
+    {% for experience in experiences %}
+      {% include "portfolio/_experience_card.html" %}
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {# --- Education --- #}
+  {% if education %}
+  <section class="flex flex-col gap-4 pb-12 md:gap-6 md:pb-[72px]" aria-labelledby="education-heading">
+    {% include "components/section_heading.html" with eyebrow="Studies" title="Education" heading_id="education-heading" %}
+    <div class="grid gap-4 md:grid-cols-[repeat(auto-fit,minmax(300px,1fr))]">
+      {% for entry in education %}
+      <article class="flex items-start gap-3.5 rounded-[18px] border border-line bg-surface p-5 md:flex-col md:gap-[18px] md:p-7">
+        {% include "portfolio/_logo.html" with image=entry.logo name=entry.school %}
+        <div class="flex flex-col gap-[3px] md:gap-1">
+          <h3 class="font-display text-[17px] font-semibold tracking-[-0.015em] md:text-xl">{{ entry.degree }}</h3>
+          <span class="text-sm text-body-soft md:text-[15px]">{{ entry.school }}{% if entry.city %} · {{ entry.city }}{% endif %}</span>
+          <span class="pt-0.5 text-xs text-subtle md:pt-1 md:text-[13px]">{{ entry.period_display }}</span>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# --- Skills: name left, chips right (stacked on mobile) --- #}
+  {% if skill_groups %}
+  <section class="flex flex-col gap-4 pb-12 md:gap-6 md:pb-[72px]" aria-labelledby="skills-heading">
+    {% include "components/section_heading.html" with eyebrow="Toolbox" title="Skills" heading_id="skills-heading" %}
+    <div class="rounded-[18px] border border-line bg-surface px-5 py-1 md:px-8 md:py-2">
+      {% for group in skill_groups %}
+      <div class="flex flex-col gap-2.5 border-b border-divider py-[18px] last:border-b-0 md:grid md:grid-cols-[200px_1fr] md:items-center md:gap-4 md:py-5">
+        <h3 class="text-[13px] font-semibold md:text-sm">{{ group.name }}</h3>
+        <div class="flex flex-wrap gap-1.5">
+          {% for skill in group.skills.all %}{% include "components/chip.html" with label=skill.name variant="skill" %}{% endfor %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# --- Services, numbered 01, 02, 03 in admin order --- #}
+  {% if services %}
+  <section class="flex flex-col gap-3.5 pb-12 md:gap-6 md:pb-[72px]" aria-labelledby="services-heading">
+    <div class="flex flex-col gap-1 md:gap-1.5">
+      {% include "components/section_heading.html" with eyebrow="Services" title="What I can build for you" heading_id="services-heading" %}
+      {% if site.services_intro %}
+        <p class="pt-1 text-[15px] leading-[1.55] text-muted md:text-base md:leading-[1.6]">{{ site.services_intro }}</p>
+      {% endif %}
+    </div>
+    <div class="grid gap-3.5 md:grid-cols-[repeat(auto-fit,minmax(250px,1fr))] md:gap-4">
+      {% for service in services %}
+      <article class="flex flex-col gap-1.5 rounded-card border border-line bg-surface p-5 md:gap-2.5 md:rounded-[18px] md:p-7">
+        <span class="text-xs text-faint tabular-nums md:text-[13px]" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+        <h3 class="font-display text-[17px] font-semibold md:text-[19px] md:tracking-[-0.01em]">{{ service.title }}</h3>
+        <p class="text-sm leading-[1.55] text-body-soft md:text-[15px] md:leading-[1.6]">{{ service.description }}</p>
+      </article>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# --- Contact card. Always shown, so every "Contact" link has somewhere to land; --- #}
+  {# --- the show_contact_form toggle only hides the form itself.                  --- #}
+  <section id="contact" class="scroll-mt-4 pb-14 md:pb-[104px]"{% if site.contact_heading %} aria-labelledby="contact-heading"{% endif %}>
+    <div class="flex flex-col gap-[18px] rounded-[18px] border border-line bg-surface p-6 md:grid md:grid-cols-[repeat(auto-fit,minmax(280px,1fr))] md:gap-10 md:rounded-card-lg md:p-11">
+      <div class="flex flex-col gap-2 md:gap-3">
+        <span class="text-[11px] font-semibold uppercase tracking-eyebrow text-subtle md:text-xs">Contact</span>
+        {% if site.contact_heading %}
+          <h2 id="contact-heading" class="font-display text-[26px] leading-[1.1] font-semibold tracking-heading md:text-[32px]">{{ site.contact_heading }}</h2>
+        {% endif %}
+        {% if site.contact_text %}
+          <p class="text-sm leading-[1.55] text-muted md:text-[15px] md:leading-[1.6]">{{ site.contact_text }}</p>
+        {% endif %}
+        {% if site.email or site.linkedin_url or site.github_url %}
+        <ul class="flex flex-col pt-1 text-sm md:pt-2">
+          {% if site.email %}<li><a href="mailto:{{ site.email }}" class="inline-flex min-h-11 items-center underline underline-offset-[3px] hover:text-black">{{ site.email }}</a></li>{% endif %}
+          {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center underline underline-offset-[3px] hover:text-black">LinkedIn ↗<span class="sr-only"> (opens in a new tab)</span></a></li>{% endif %}
+          {% if site.github_url %}<li><a href="{{ site.github_url }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center underline underline-offset-[3px] hover:text-black">GitHub ↗<span class="sr-only"> (opens in a new tab)</span></a></li>{% endif %}
+        </ul>
+        {% endif %}
+      </div>
+
+      {% if site.show_contact_form %}
+        {% include "contact/_form.html" %}
+      {% endif %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

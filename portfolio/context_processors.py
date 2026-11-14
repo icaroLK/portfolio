@@ -13,6 +13,7 @@ NAV_SECTIONS = {
     "home": "projects",
     "project_detail": "projects",
     "about": "about",
+    "submit": "about",  # the contact form re-shows the About page when it has errors
 }
 
 

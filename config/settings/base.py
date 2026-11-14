@@ -121,3 +121,13 @@ STATIC_ROOT = BASE_DIR / "staticfiles"     # where collectstatic gathers everyth
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"            # uploaded images and the resume PDF
+
+
+# --- Contact form ---
+
+# Sender address of the notification emails (the recipient is set in Site settings).
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="webmaster@localhost")
+
+# Only true behind a proxy that sets X-Forwarded-For (Caddy in production).
+# Otherwise visitors could fake their IP and skip the rate limit.
+TRUST_X_FORWARDED_FOR = False

@@ -41,7 +41,11 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             "site_name", "headline", "subheadline",
             "status_badge_text", "show_status_badge",
         ]}),
-        ("About", {"fields": ["about_bio", "profile_photo", "profile_photo_preview"]}),
+        ("About", {"fields": [
+            "about_heading", "about_bio", "profile_photo", "profile_photo_preview",
+            "services_intro", "contact_heading", "contact_text",
+        ]}),
+        ("Contact form", {"fields": ["notification_email"]}),
         ("Links & resume", {"fields": [
             "resume_pdf", "email", "github_url", "linkedin_url", "location_line",
         ]}),

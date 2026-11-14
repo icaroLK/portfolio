@@ -37,10 +37,17 @@ SITE_SETTINGS = {
     "headline": "I build websites, WhatsApp bots and automations that save businesses time.",
     "subheadline": "Icaro Kucha. Software engineer focused on AI automation, Python and Django.",
     "status_badge_text": "Open to work · Available for freelance",
+    "about_heading": "Hi, I'm Icaro.",
     "about_bio": (
         "Placeholder intro. Write a few lines in your own voice: what you build, "
         "why you like it and how you work with people."
     ),
+    "services_intro": (
+        "For small businesses and teams that want to sell more or spend less time "
+        "on repetitive work."
+    ),
+    "contact_heading": "Let's work together.",
+    "contact_text": "Have a role or a project in mind? Send a message, or reach me directly.",
     "email": "hi@icarokucha.com",
     "github_url": "https://github.com/",
     "linkedin_url": "https://www.linkedin.com/",

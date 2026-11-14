@@ -1,0 +1,9 @@
+{% comment %}
+  Link styled as a button.
+  Usage: {% include "components/button.html" with href=url label="See my work" variant="secondary" %}
+  Options: variant = "primary" (default) or "secondary"; external=True opens a new tab;
+  extra_class adds classes (for example "w-full").
+{% endcomment %}
+<a href="{{ href }}"
+   class="btn {% if variant == 'secondary' %}btn-secondary{% else %}btn-primary{% endif %} {{ extra_class }}"
+   {% if external %}target="_blank" rel="noopener"{% endif %}>{{ label }}</a>

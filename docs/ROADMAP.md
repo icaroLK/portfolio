@@ -8,7 +8,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | --- | --- | --- |
 | 0 | Project setup | Done |
 | 1 | Models and admin | Done |
-| 2 | Design system and layout shell | Not started |
+| 2 | Design system and layout shell | Done |
 | 3 | Home page | Not started |
 | 4 | Project detail page | Not started |
 | 5 | About page and contact form | Not started |
@@ -72,10 +72,10 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **You validate:**
 
-- [ ] `/styleguide/` looks like the V2 designs in `docs/design/`
-- [ ] Mobile menu opens and closes by tap and by Escape, and works with the keyboard
-- [ ] Editing links in Site settings changes the header and footer
-- [ ] Nothing scrolls sideways at 390 px width
+- [x] `/styleguide/` looks like the V2 designs in `docs/design/`
+- [x] Mobile menu opens and closes by tap and by Escape, and works with the keyboard
+- [x] Editing links in Site settings changes the header and footer
+- [x] Nothing scrolls sideways at 390 px width
 
 ## Sprint 3: Home page
 

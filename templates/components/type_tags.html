@@ -1,0 +1,6 @@
+{% comment %}
+  Project type tags as one uppercase line: "COMPUTER VISION · SYSTEM".
+  Usage: {% include "components/type_tags.html" with tags=project.type_tags.all %}
+  size="sm" gives the smaller line used on archive cards.
+{% endcomment %}
+<span class="{% if size == 'sm' %}text-[11px]{% else %}text-xs{% endif %} font-semibold uppercase tracking-tag text-subtle">{% for tag in tags %}{{ tag.name }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>

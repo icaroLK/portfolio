@@ -1,0 +1,8 @@
+{% comment %}
+  Pill with a green dot, for example "Open to work".
+  Usage: {% include "components/status_badge.html" with text=site.status_badge_text %}
+{% endcomment %}
+<span class="inline-flex items-center gap-2 self-start rounded-full border border-line bg-surface py-[5px] pr-[11px] pl-[9px] text-xs text-body md:py-1.5 md:pr-3 md:pl-2.5 md:text-[13px]">
+  <span class="size-[7px] rounded-full bg-status" aria-hidden="true"></span>
+  {{ text }}
+</span>

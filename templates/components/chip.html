@@ -1,0 +1,19 @@
+{% comment %}
+  Small rounded label.
+  Usage: {% include "components/chip.html" with label="Django" variant="tech" %}
+  Variants:
+    "tech"  (default) soft gray fill, used on project cards
+    "skill" outlined, used on the About skills list
+    "stack" outlined with a small icon square and an optional detail ("car detection")
+{% endcomment %}
+{% if variant == "stack" %}
+<span class="inline-flex items-center gap-2 rounded-full border border-line-soft bg-page px-3 py-[7px] text-[13px]">
+  <span class="size-3.5 rounded-[4px] bg-icon" aria-hidden="true"></span>
+  <span class="font-semibold text-ink">{{ label }}</span>
+  {% if detail %}<span class="text-subtle">{{ detail }}</span>{% endif %}
+</span>
+{% elif variant == "skill" %}
+<span class="inline-flex rounded-full border border-line-soft bg-page px-3 py-[5px] text-[13px] text-ink">{{ label }}</span>
+{% else %}
+<span class="inline-flex rounded-full bg-chip px-2.5 py-1 text-xs text-body">{{ label }}</span>
+{% endif %}

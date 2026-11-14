@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% comment %}
+  Design check page (DEBUG only). Shows every component from templates/components
+  with real data from the database. Labels here describe components, not site content.
+{% endcomment %}
+
+{% block title %}Styleguide · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto flex max-w-site flex-col gap-16 px-5 py-12 md:px-8 md:py-20">
+
+  <div class="flex flex-col gap-3">
+    <span class="text-xs font-semibold uppercase tracking-eyebrow text-subtle">Dev only</span>
+    <h1 class="font-display text-4xl font-semibold leading-[1.04] tracking-display md:text-6xl">Styleguide</h1>
+    <p class="max-w-xl text-base leading-relaxed text-muted md:text-lg">Every component on one page. Compare with <code>docs/design/</code>. Chips use seed data: run <code>python manage.py seed_demo</code> if they are empty.</p>
+  </div>
+
+  {# --- Colors --- #}
+  <section class="flex flex-col gap-6" aria-labelledby="sg-colors">
+    {% include "components/section_heading.html" with eyebrow="Tokens" title="Colors" heading_id="sg-colors" %}
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div class="card p-2"><div class="h-14 rounded-[10px] border border-line bg-page"></div><p class="px-1 pt-2 text-xs"><b>page</b> #F7F7F5</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] border border-line bg-surface"></div><p class="px-1 pt-2 text-xs"><b>surface</b> #FFFFFF</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-chip"></div><p class="px-1 pt-2 text-xs"><b>chip</b> #F3F3F0</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-track"></div><p class="px-1 pt-2 text-xs"><b>track</b> #EEEEEB</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-placeholder"></div><p class="px-1 pt-2 text-xs"><b>placeholder</b> #EDEDEA</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-status"></div><p class="px-1 pt-2 text-xs"><b>status</b> #1F9D55</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-ink"></div><p class="px-1 pt-2 text-xs"><b>ink</b> #111111</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-body"></div><p class="px-1 pt-2 text-xs"><b>body</b> #3A3A38</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-body-soft"></div><p class="px-1 pt-2 text-xs"><b>body-soft</b> #4A4A47</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-muted"></div><p class="px-1 pt-2 text-xs"><b>muted</b> #5F5F5C</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-subtle"></div><p class="px-1 pt-2 text-xs"><b>subtle</b> #6B6B68</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-faint"></div><p class="px-1 pt-2 text-xs"><b>faint</b> #9A9A96</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-line"></div><p class="px-1 pt-2 text-xs"><b>line</b> #E7E7E4</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-line-strong"></div><p class="px-1 pt-2 text-xs"><b>line-strong</b> #D9D9D5</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-line-input"></div><p class="px-1 pt-2 text-xs"><b>line-input</b> #E2E2DE</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-line-soft"></div><p class="px-1 pt-2 text-xs"><b>line-soft</b> #ECECE9</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-divider"></div><p class="px-1 pt-2 text-xs"><b>divider</b> #EFEFEC</p></div>
+      <div class="card p-2"><div class="h-14 rounded-[10px] bg-icon"></div><p class="px-1 pt-2 text-xs"><b>icon</b> #DCDCD8</p></div>
+    </div>
+  </section>
+
+  {# --- Typography --- #}
+  <section class="flex flex-col gap-6" aria-labelledby="sg-type">
+    {% include "components/section_heading.html" with eyebrow="Tokens" title="Typography" heading_id="sg-type" %}
+    <div class="card flex flex-col gap-6 p-6 md:p-8">
+      <div class="flex flex-col gap-1">
+        <span class="text-xs text-subtle">Display (H1): Inter Tight 600, 60 px desktop / 36 px mobile</span>
+        <p class="max-w-[860px] font-display text-4xl leading-[1.05] font-semibold tracking-display md:text-6xl">{{ site.headline }}</p>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-xs text-subtle">Heading (H2): Inter Tight 600, 32 px / 26 px</span>
+        <p class="font-display text-[26px] font-semibold tracking-heading md:text-[32px]">{{ site.site_name }}</p>
+      </div>
+      <div class="flex flex-col gap-1">
+        <span class="text-xs text-subtle">Lead: Inter 400, 18 px / 16 px, muted</span>
+        <p class="max-w-[620px] text-base leading-relaxed text-muted md:text-lg">{{ site.subheadline }}</p>
+      </div>
+    </div>
+  </section>
+
+  {# --- Buttons --- #}
+  <section class="flex flex-col gap-6" aria-labelledby="sg-buttons">
+    {% include "components/section_heading.html" with eyebrow="Components" title="Buttons" heading_id="sg-buttons" %}
+    <div class="card flex flex-col gap-6 p-6 md:p-8">
+      <div class="flex flex-wrap gap-3">
+        {% include "components/button.html" with href="#" label="Primary" %}
+        {% include "components/button.html" with href="#" label="Secondary" variant="secondary" %}
+        {% include "components/button.html" with href="#" label="External ↗" variant="secondary" external=True %}
+      </div>
+      <div class="flex flex-col gap-2.5 md:max-w-xs">
+        <span class="text-xs text-subtle">Full width (mobile hero)</span>
+        {% include "components/button.html" with href="#" label="Primary" extra_class="w-full rounded-img" %}
+        {% include "components/button.html" with href="#" label="Secondary" variant="secondary" extra_class="w-full rounded-img" %}
+      </div>
+      <div class="flex flex-col gap-2">
+        <span class="text-xs text-subtle">Plain &lt;button&gt; with the same classes (for forms)</span>
+        <div><button type="button" class="btn btn-primary">Button element</button></div>
+      </div>
+    </div>
+  </section>
+
+  {# --- Chips and tags --- #}
+  <section class="flex flex-col gap-6" aria-labelledby="sg-chips">
+    {% include "components/section_heading.html" with eyebrow="Components" title="Chips and tags" heading_id="sg-chips" %}
+    <div class="card flex flex-col gap-6 p-6 md:p-8">
+      <div class="flex flex-col gap-2">
+        <span class="text-xs text-subtle">Type tag line (featured / archive)</span>
+        {% include "components/type_tags.html" with tags=sample_tags %}
+        {% include "components/type_tags.html" with tags=sample_tags size="sm" %}
+      </div>
+      <div class="flex flex-col gap-2">
+        <span class="text-xs text-subtle">Tech chips (project cards)</span>
+        <div class="flex flex-wrap gap-1.5">
+          {% for tech in sample_techs %}{% include "components/chip.html" with label=tech.name %}{% endfor %}
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <span class="text-xs text-subtle">Stack chips (project detail)</span>
+        <div class="flex flex-wrap gap-2">
+          {% for item in sample_stack %}{% include "components/chip.html" with label=item.tech.name detail=item.purpose variant="stack" %}{% endfor %}
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <span class="text-xs text-subtle">Skill chips (About)</span>
+        <div class="flex flex-wrap gap-1.5">
+          {% for skill in sample_skills %}{% include "components/chip.html" with label=skill.name variant="skill" %}{% endfor %}
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# --- Section heading --- #}
+  <section class="flex flex-col gap-6" aria-labelledby="sg-heading">
+    {% include "components/section_heading.html" with eyebrow="Components" title="Eyebrow and section heading" heading_id="sg-heading" %}
+    <div class="card p-6 md:p-8">
+      {% include "components/section_heading.html" with eyebrow="Eyebrow label" title="Section heading" %}
+    </div>
+  </section>
+
+  {# --- Cards --- #}
+  <section class="flex flex-col gap-6" aria-labelledby="sg-cards">
+    {% include "components/section_heading.html" with eyebrow="Components" title="Card shells" heading_id="sg-cards" %}
+    <div class="grid gap-5 md:grid-cols-2">
+      <div class="card-lg p-3">
+        <div class="flex min-h-48 items-center justify-center rounded-img bg-placeholder text-[13px] text-subtle">card-lg + inset image (20 px radius)</div>
+        <div class="flex flex-col gap-2 px-3 pt-4 pb-2">
+          {% include "components/type_tags.html" with tags=sample_tags %}
+          <p class="text-[15px] leading-relaxed text-body-soft">Used for featured projects.</p>
+        </div>
+      </div>
+      <div class="card p-2.5">
+        <div class="flex h-[180px] items-center justify-center rounded-[10px] bg-placeholder text-[13px] text-subtle">card (16 px radius)</div>
+        <div class="flex flex-col gap-2 px-2.5 pt-3.5 pb-2.5">
+          {% include "components/type_tags.html" with tags=sample_tags size="sm" %}
+          <p class="text-sm leading-relaxed text-body-soft">Used for archive projects, experience, services and the tech stack box.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {# --- Status badge --- #}
+  <section class="flex flex-col gap-6" aria-labelledby="sg-badge">
+    {% include "components/section_heading.html" with eyebrow="Components" title="Status badge" heading_id="sg-badge" %}
+    <div class="card flex flex-col p-6 md:p-8">
+      {% include "components/status_badge.html" with text=site.status_badge_text %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

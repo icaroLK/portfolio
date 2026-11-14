@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{% endblock %}</title>
+  <title>{% block title %}{{ site.site_name }}{% endblock %}</title>
 
   {# Fonts: Inter for body text, Inter Tight for headings. Only the weights we use. #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -11,8 +11,14 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Inter+Tight:wght@600&display=swap">
 
   <link rel="stylesheet" href="{% static 'css/site.css' %}">
+  <script src="{% static 'js/menu.js' %}" defer></script>
 </head>
-<body class="min-h-screen bg-[#F7F7F5] font-sans text-[#111111] antialiased">
-  {% block content %}{% endblock %}
+<body class="flex min-h-screen flex-col bg-page font-sans text-ink antialiased">
+  {% include "partials/header.html" %}
+  {# flex-1 pushes the footer to the bottom on short pages #}
+  <main id="main" class="flex-1">
+    {% block content %}{% endblock %}
+  </main>
+  {% include "partials/footer.html" %}
 </body>
 </html>

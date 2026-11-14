@@ -1,0 +1,17 @@
+{% comment %}
+  Site footer, filled from Site settings. Links with an empty value are hidden.
+  Mobile: links stacked above the copyright line. Desktop: copyright left, links right.
+{% endcomment %}
+<footer class="border-t border-line">
+  <div class="mx-auto flex max-w-site flex-col-reverse gap-0.5 px-5 pt-5 pb-9 text-[13px] text-subtle md:flex-row md:flex-wrap md:items-center md:justify-between md:gap-4 md:px-8 md:py-6">
+    <span>&copy; {{ site.site_name }}{% if site.location_line %} · {{ site.location_line }}{% endif %}</span>
+    {% if site.email or site.github_url or site.linkedin_url or site.resume_pdf %}
+    <ul class="flex flex-wrap gap-x-5 md:gap-x-6">
+      {% if site.email %}<li><a href="mailto:{{ site.email }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">Email</a></li>{% endif %}
+      {% if site.github_url %}<li><a href="{{ site.github_url }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">GitHub</a></li>{% endif %}
+      {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">LinkedIn</a></li>{% endif %}
+      {% if site.resume_pdf %}<li><a href="{{ site.resume_pdf.url }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">Resume</a></li>{% endif %}
+    </ul>
+    {% endif %}
+  </div>
+</footer>

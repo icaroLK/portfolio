@@ -1,0 +1,21 @@
+{% comment %}
+  The header links, shared by the desktop nav and the mobile panel.
+  layout = "desktop" or "mobile".
+{% endcomment %}
+{% if layout == "mobile" %}
+  {% with row="flex min-h-12 items-center border-b border-divider text-base" %}
+  <a href="{% url 'portfolio:home' %}" class="{{ row }} {% if nav_section == 'projects' %}font-medium text-ink{% else %}text-muted{% endif %}"{% if nav_section == 'projects' %} aria-current="page"{% endif %}>Projects</a>
+  <a href="/about/" class="{{ row }} {% if nav_section == 'about' %}font-medium text-ink{% else %}text-muted{% endif %}"{% if nav_section == 'about' %} aria-current="page"{% endif %}>About</a>
+  <a href="/about/#contact" class="{{ row }} text-muted">Contact</a>
+  {% endwith %}
+  {% if site.resume_pdf %}
+  <a href="{{ site.resume_pdf.url }}" class="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-line-strong bg-surface px-4 text-[15px] font-medium text-ink">Resume</a>
+  {% endif %}
+{% else %}
+  <a href="{% url 'portfolio:home' %}" class="inline-flex min-h-11 items-center {% if nav_section == 'projects' %}text-ink{% else %}text-muted hover:text-ink{% endif %}"{% if nav_section == 'projects' %} aria-current="page"{% endif %}>Projects</a>
+  <a href="/about/" class="inline-flex min-h-11 items-center {% if nav_section == 'about' %}text-ink{% else %}text-muted hover:text-ink{% endif %}"{% if nav_section == 'about' %} aria-current="page"{% endif %}>About</a>
+  <a href="/about/#contact" class="inline-flex min-h-11 items-center text-muted hover:text-ink">Contact</a>
+  {% if site.resume_pdf %}
+  <a href="{{ site.resume_pdf.url }}" class="inline-flex min-h-11 items-center rounded-full border border-line-strong px-3.5 text-ink hover:border-ink">Resume</a>
+  {% endif %}
+{% endif %}

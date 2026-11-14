@@ -10,8 +10,112 @@
 @source "../../portfolio/templates";
 @source "../../contact/templates";
 
-/* Design tokens. Sprint 2 adds the full V2 palette here. */
+/*
+  Design tokens from Version 2 (SPEC section 8).
+  Each --color-x becomes classes like bg-x, text-x and border-x.
+*/
 @theme {
+  /* Fonts */
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Inter Tight", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  /* Surfaces */
+  --color-page: #F7F7F5;         /* page background */
+  --color-surface: #FFFFFF;      /* cards */
+  --color-chip: #F3F3F0;         /* soft fill: tech chips */
+  --color-track: #EEEEEB;        /* filter track */
+  --color-placeholder: #EDEDEA;  /* empty image */
+  --color-icon: #DCDCD8;         /* small square icon in stack chips */
+
+  /* Text */
+  --color-ink: #111111;          /* headings, primary buttons */
+  --color-body: #3A3A38;
+  --color-body-soft: #4A4A47;
+  --color-muted: #5F5F5C;        /* secondary text, inactive nav */
+  --color-subtle: #6B6B68;       /* eyebrows, meta lines */
+  --color-faint: #9A9A96;        /* numbers like 01, 02 */
+
+  /* Borders */
+  --color-line: #E7E7E4;         /* cards, header, footer */
+  --color-line-strong: #D9D9D5;  /* secondary buttons, resume pill */
+  --color-line-input: #E2E2DE;   /* inputs, menu button */
+  --color-line-soft: #ECECE9;    /* outlined chips */
+  --color-divider: #EFEFEC;      /* rows inside a card */
+
+  /* Status */
+  --color-status: #1F9D55;
+
+  /* Radii: rounded-btn, rounded-img, rounded-card, rounded-card-lg (pills use rounded-full) */
+  --radius-btn: 10px;
+  --radius-img: 12px;
+  --radius-card: 16px;
+  --radius-card-lg: 20px;
+
+  /* Letter spacing */
+  --tracking-display: -0.035em;  /* H1 */
+  --tracking-heading: -0.02em;   /* H2 */
+  --tracking-tag: 0.1em;         /* type tag line */
+  --tracking-eyebrow: 0.12em;    /* eyebrow labels */
+
+  /* Page width: max-w-site */
+  --container-site: 1160px;
+}
+
+@layer base {
+  /* One clear focus ring for every link, button and input when using the keyboard. */
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+/*
+  Small reusable classes. Use these when a partial does not fit,
+  for example a <button type="submit"> styled like a primary button.
+*/
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  padding: 12px 22px;
+  border-radius: var(--radius-btn);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.3;
+  text-decoration: none;
+  transition: background-color 150ms, border-color 150ms;
+}
+
+@utility btn-primary {
+  background-color: var(--color-ink);
+  border: 1px solid var(--color-ink);
+  color: #fff;
+  &:hover {
+    background-color: #000;
+  }
+}
+
+@utility btn-secondary {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-ink);
+  &:hover {
+    border-color: var(--color-ink);
+  }
+}
+
+@utility card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card);
+}
+
+@utility card-lg {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-card-lg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
 }

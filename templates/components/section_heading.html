@@ -1,0 +1,9 @@
+{% comment %}
+  Eyebrow label above a section heading.
+  Usage: {% include "components/section_heading.html" with eyebrow="Selected work" title="Featured projects" %}
+  heading_id sets an id on the heading (for aria-labelledby or anchor links).
+{% endcomment %}
+<div class="flex flex-col gap-1 md:gap-1.5">
+  <span class="text-[11px] font-semibold uppercase tracking-eyebrow text-subtle md:text-xs">{{ eyebrow }}</span>
+  <h2 {% if heading_id %}id="{{ heading_id }}"{% endif %} class="font-display text-[26px] font-semibold leading-tight tracking-heading md:text-[32px]">{{ title }}</h2>
+</div>

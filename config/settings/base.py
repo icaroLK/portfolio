@@ -37,6 +37,9 @@ INSTALLED_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    # WhiteNoise also serves CSS/JS in dev, with "always re-check" headers, so the
+    # browser never keeps an old site.css after a rebuild. Must sit above staticfiles.
+    "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
     # Drag-and-drop ordering in the admin
     "adminsortable2",

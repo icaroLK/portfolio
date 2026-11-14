@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import Http404
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
 from .models import Project, ProjectTech, Skill, Tech, TypeTag
 
@@ -22,6 +22,13 @@ def home(request):
     return render(request, "portfolio/home.html", context)
 
 
+def project_detail(request, slug):
+    """One project page. Missing or unpublished slugs get the styled 404."""
+    project = get_object_or_404(Project.objects.published().for_detail(), slug=slug)
+    context = {"project": project, "next_project": project.next_project()}
+    return render(request, "portfolio/project_detail.html", context)
+
+
 def styleguide(request):
     """Every UI component on one page, for design checks. Only exists with DEBUG on."""
     if not settings.DEBUG:
@@ -34,3 +41,10 @@ def styleguide(request):
         "sample_skills": Skill.objects.all()[:5],
     }
     return render(request, "portfolio/styleguide.html", context)
+
+
+def preview_404(request):
+    """The styled 404 page, viewable while DEBUG is on (Django shows its debug page otherwise)."""
+    if not settings.DEBUG:
+        raise Http404
+    return render(request, "404.html", status=404)

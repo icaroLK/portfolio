@@ -82,12 +82,12 @@ Three public pages (Home, Project detail, About), plus shared header and footer,
 
 - "← All projects" back link.
 - Type tags line, title (H1), pitch, meta line (role · period), buttons "Live demo ↗" and "GitHub repo ↗" (each only if its URL exists; open in new tab with `rel="noopener"`).
-- Video embed (YouTube or Loom) if `video_url` is set; converted to the embed URL server-side.
+- Video embed (YouTube or Loom) if `video_url` is set; converted to the embed URL server-side. No video: no box. The admin rejects other video links.
 - **What it does:** plain-language paragraph.
 - **Key features:** numbered rows 01, 02, 03 from ProjectFeature. Hidden if none.
 - **Tech stack:** compact chips, each = tech name + short purpose (ProjectTech).
 - **How it works:** technical text, labeled "For technical readers". Image below only if `architecture_image` is uploaded. Section hidden if empty.
-- **Gallery:** 3-column grid desktop, horizontal swipe strip mobile. Images open full size (new tab in v1, lightbox optional later).
+- **Gallery:** 3-column grid desktop, horizontal swipe strip mobile. Clicking an image opens a full-screen viewer with Close, Previous and Next (Escape, arrow keys and swipe work too); without JS the link opens the image itself.
 - **Next project** card to the next published project in order (wraps to the first).
 - Missing or unpublished slug returns the styled 404.
 

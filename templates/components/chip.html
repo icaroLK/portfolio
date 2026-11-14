@@ -4,11 +4,12 @@
   Variants:
     "tech"  (default) soft gray fill, used on project cards
     "skill" outlined, used on the About skills list
-    "stack" outlined with a small icon square and an optional detail ("car detection")
+    "stack" outlined with a small icon square and an optional detail ("car detection");
+            smaller on mobile, where the V2 design drops the icon square
 {% endcomment %}
 {% if variant == "stack" %}
-<span class="inline-flex items-center gap-2 rounded-full border border-line-soft bg-page px-3 py-[7px] text-[13px]">
-  <span class="size-3.5 rounded-[4px] bg-icon" aria-hidden="true"></span>
+<span class="inline-flex items-center gap-1.5 rounded-full border border-line-soft bg-page px-2.5 py-1.5 text-xs md:gap-2 md:px-3 md:py-[7px] md:text-[13px]">
+  <span class="hidden size-3.5 rounded-[4px] bg-icon md:block" aria-hidden="true"></span>
   <span class="font-semibold text-ink">{{ label }}</span>
   {% if detail %}<span class="text-subtle">{{ detail }}</span>{% endif %}
 </span>

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% comment %}
+  Shown for any missing page when DEBUG is off (a missing or unpublished project too).
+  With DEBUG on, Django shows its own debug page instead: preview this one at /styleguide/404/.
+{% endcomment %}
+
+{% block title %}Page not found · {{ site.site_name }}{% endblock %}
+
+{% block content %}
+{# Centered both ways: min-h keeps the block in the middle of the space between header and footer. #}
+<div class="mx-auto flex min-h-[60vh] max-w-[820px] flex-col items-center justify-center gap-4 px-5 py-16 text-center md:min-h-[65vh] md:gap-5 md:px-8">
+  <span class="text-[11px] font-semibold uppercase tracking-eyebrow text-subtle md:text-xs">Error 404</span>
+  <h1 class="font-display text-[38px] leading-[1.05] font-semibold tracking-display md:text-[56px] md:leading-[1.04]">Page not found.</h1>
+  <p class="max-w-[520px] text-[17px] leading-[1.55] text-body-soft md:text-xl">This page does not exist or is no longer available.</p>
+  <div class="pt-2">
+    {% include "components/button.html" with href="/" label="Back to projects" %}
+  </div>
+</div>
+{% endblock %}

@@ -12,3 +12,7 @@ Pillow>=12,<14
 
 # Drag-and-drop ordering in the admin (Sprint 1)
 django-admin-sortable2>=2.4,<3
+
+# "Simple Markdown" in project and experience texts, cleaned of unsafe HTML (Sprint 4)
+Markdown>=3.7,<4
+nh3>=0.3,<0.4

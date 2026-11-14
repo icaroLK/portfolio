@@ -6,8 +6,11 @@ where it makes sense, `is_published` (hidden from the site when off).
 """
 
 from django.db import models
+from django.db.models import Q
+from django.urls import reverse
 from django.utils.text import slugify
 
+from .embeds import embed_url, validate_video_url
 from .validators import IMAGE_VALIDATORS, PDF_VALIDATORS, RandomFilename
 
 
@@ -45,6 +48,10 @@ class ProjectQuerySet(PublishedQuerySet):
             "type_tags",
             models.Prefetch("stack", queryset=ProjectTech.objects.select_related("tech")),
         )
+
+    def for_detail(self):
+        """Everything the project page shows, in a fixed number of queries."""
+        return self.for_cards().prefetch_related("features", "gallery")
 
 
 class TypeTagQuerySet(models.QuerySet):
@@ -169,7 +176,11 @@ class Project(TimeStampedModel):
     cover_image = models.ImageField(
         upload_to=RandomFilename("projects"), validators=IMAGE_VALIDATORS
     )
-    video_url = models.URLField(blank=True, help_text="YouTube or Loom link.")
+    video_url = models.URLField(
+        blank=True,
+        validators=[validate_video_url],
+        help_text="YouTube or Loom link. Leave empty to hide the video box.",
+    )
 
     # Links
     live_url = models.URLField(blank=True)
@@ -206,8 +217,21 @@ class Project(TimeStampedModel):
         super().save(*args, **kwargs)
 
     def get_absolute_url(self):
-        # Sprint 4 adds the project page route; switch this to reverse() then.
-        return f"/projects/{self.slug}/"
+        return reverse("portfolio:project_detail", args=[self.slug])
+
+    @property
+    def video_embed_url(self):
+        return embed_url(self.video_url)
+
+    def next_project(self):
+        """The next published project in admin order, wrapping to the first.
+
+        Returns None when this is the only published project, so the page
+        never links to itself. Ties in `order` are broken by id.
+        """
+        published = Project.objects.published().exclude(pk=self.pk).order_by("order", "pk")
+        after = published.filter(Q(order__gt=self.order) | Q(order=self.order, pk__gt=self.pk))
+        return after.first() or published.first()
 
 
 class ProjectFeature(TimeStampedModel):

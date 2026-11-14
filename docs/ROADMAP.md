@@ -10,7 +10,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | 1 | Models and admin | Done |
 | 2 | Design system and layout shell | Done |
 | 3 | Home page | Done |
-| 4 | Project detail page | Not started |
+| 4 | Project detail page | Done |
 | 5 | About page and contact form | Not started |
 | 6 | SEO, performance and polish | Not started |
 | 7 | Deploy and go live | Not started |
@@ -106,11 +106,11 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **You validate:**
 
-- [ ] A fully filled project matches `docs/design/v2-project.html` and its mobile version
-- [ ] A project with only title, pitch, cover and what_it_does shows no empty sections or broken buttons
-- [ ] A YouTube link and a Loom link both play inline
-- [ ] Next project on the last project goes to the first
-- [ ] An unpublished project's URL shows the styled 404
+- [x] A fully filled project matches `docs/design/v2-project.html` and its mobile version
+- [x] A project with only title, pitch, cover and what_it_does shows no empty sections or broken buttons
+- [x] A YouTube link and a Loom link both play inline
+- [x] Next project on the last project goes to the first
+- [x] An unpublished project's URL shows the styled 404
 
 ## Sprint 5: About page and contact form
 

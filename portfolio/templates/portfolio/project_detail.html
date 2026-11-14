@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% load markdown_extras static %}
+
+{% block title %}{{ project.title }} · {{ site.site_name }}{% endblock %}
+
+{% block extra_scripts %}
+  {% if project.gallery.all %}<script src="{% static 'js/gallery.js' %}" defer></script>{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-[820px] px-5 md:px-8">
+
+  {# min-h-11 keeps the 44 px touch target; the smaller top padding makes up for it. #}
+  <div class="pt-2.5 md:pt-7">
+    <a href="{% url 'portfolio:home' %}" class="inline-flex min-h-11 items-center text-sm text-muted hover:text-ink">← All projects</a>
+  </div>
+
+  {# --- Header block --- #}
+  <section class="flex flex-col gap-3.5 pt-3 pb-8 md:gap-[18px] md:pt-6 md:pb-11">
+    {% if project.type_tags.all %}
+      <span class="text-[11px] font-semibold uppercase tracking-tag text-subtle md:text-xs">{% for tag in project.type_tags.all %}{{ tag.name }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
+    {% endif %}
+    <h1 class="font-display text-[38px] leading-[1.05] font-semibold tracking-display md:text-[56px] md:leading-[1.04]">{{ project.title }}</h1>
+    <p class="text-[17px] leading-[1.55] text-body-soft md:text-xl">{{ project.pitch }}</p>
+
+    {# Mobile shows the meta line above the buttons, desktop next to them (V2 designs). #}
+    {% if project.role or project.period %}
+      <span class="text-[13px] text-subtle md:hidden">{% include "portfolio/_project_meta.html" %}</span>
+    {% endif %}
+
+    {% if project.live_url or project.repo_url or project.role or project.period %}
+    <div class="grid grid-cols-2 gap-2.5 pt-1 md:flex md:flex-wrap md:items-center md:gap-3 md:pt-1.5">
+      {% if project.live_url %}
+        <a href="{{ project.live_url }}" target="_blank" rel="noopener" class="btn btn-primary rounded-img px-3 text-sm md:rounded-btn md:px-5 md:text-[15px]">Live demo ↗<span class="sr-only"> (opens in a new tab)</span></a>
+      {% endif %}
+      {% if project.repo_url %}
+        <a href="{{ project.repo_url }}" target="_blank" rel="noopener" class="btn btn-secondary rounded-img px-3 text-sm md:rounded-btn md:px-5 md:text-[15px]"><span class="md:hidden">GitHub</span><span class="hidden md:inline">GitHub repo</span> ↗<span class="sr-only"> (opens in a new tab)</span></a>
+      {% endif %}
+      {% if project.role or project.period %}
+        <span class="hidden {% if project.live_url or project.repo_url %}pl-2{% endif %} text-[13px] text-subtle md:inline">{% include "portfolio/_project_meta.html" %}</span>
+      {% endif %}
+    </div>
+    {% endif %}
+  </section>
+
+  {# --- Video (only when a link is set) --- #}
+  {% if project.video_embed_url %}
+  <section class="pb-11 md:pb-16">
+    <div class="rounded-card border border-line bg-surface p-1.5 md:rounded-card-lg md:p-2.5">
+      <div class="aspect-video overflow-hidden rounded-[11px] bg-placeholder md:rounded-img">
+        <iframe src="{{ project.video_embed_url }}"
+                title="Demo video: {{ project.title }}"
+                class="size-full"
+                allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                referrerpolicy="strict-origin-when-cross-origin"></iframe>
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  {# --- What it does --- #}
+  <section class="flex flex-col gap-2.5 pb-10 md:gap-3.5 md:pb-14">
+    <h2 class="font-display text-[22px] font-semibold tracking-heading md:text-[26px]">What it does</h2>
+    <div class="flex flex-col gap-4 text-base leading-[1.7] text-body md:text-[17px] md:leading-[1.75]">{{ project.what_it_does|linebreaks }}</div>
+  </section>
+
+  {# --- Key features (hidden when none) --- #}
+  {% if project.features.all %}
+  <section class="flex flex-col gap-3 pb-10 md:gap-[18px] md:pb-14">
+    <h2 class="font-display text-[22px] font-semibold tracking-heading md:text-[26px]">Key features</h2>
+    <ol class="flex flex-col border-t border-line">
+      {% for feature in project.features.all %}
+      <li class="flex gap-3.5 border-b border-line py-3.5 text-[15px] leading-normal text-body md:gap-4 md:py-4 md:text-base md:leading-[1.55]">
+        <span class="min-w-5 text-faint tabular-nums md:min-w-6" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+        <span>{{ feature.text }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endif %}
+
+  {# --- Tech stack (hidden when empty) --- #}
+  {% if project.stack.all %}
+  <section class="card mb-10 flex flex-col gap-3 p-5 md:mb-14 md:gap-4 md:px-8 md:py-7" aria-labelledby="stack-heading">
+    <h2 id="stack-heading" class="text-[11px] font-semibold uppercase tracking-eyebrow text-subtle md:text-xs">Tech stack</h2>
+    <div class="flex flex-wrap gap-1.5 md:gap-2">
+      {% for item in project.stack.all %}{% include "components/chip.html" with label=item.tech.name detail=item.purpose variant="stack" %}{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {# --- How it works (hidden when empty; image only if uploaded) --- #}
+  {% if project.how_it_works %}
+  <section class="flex flex-col gap-2.5 pb-10 md:gap-3.5 md:pb-14">
+    <div class="flex flex-col gap-1 md:flex-row md:flex-wrap md:items-baseline md:gap-3">
+      <h2 class="font-display text-[22px] font-semibold tracking-heading md:text-[26px]">How it works</h2>
+      <span class="text-[13px] text-subtle">For technical readers</span>
+    </div>
+    <div class="rich-text text-base leading-[1.7] text-body md:text-[17px] md:leading-[1.75]">{{ project.how_it_works|markdown }}</div>
+    {% if project.architecture_image %}
+      <a href="{{ project.architecture_image.url }}" target="_blank" rel="noopener" class="mt-2 block overflow-hidden rounded-img border border-line bg-surface">
+        <img src="{{ project.architecture_image.url }}" alt="How {{ project.title }} works: architecture diagram" loading="lazy" class="w-full">
+      </a>
+    {% endif %}
+  </section>
+  {% endif %}
+
+  {# --- Gallery: grid on desktop, swipe strip on mobile --- #}
+  {% if project.gallery.all %}
+  <section class="flex flex-col gap-3 pb-10 md:gap-[18px] md:pb-16">
+    <h2 class="font-display text-[22px] font-semibold tracking-heading md:text-[26px]">Gallery</h2>
+    <div data-gallery class="-mr-5 flex gap-2.5 overflow-x-auto pb-1 md:mr-0 md:grid md:grid-cols-[repeat(auto-fit,minmax(230px,1fr))] md:gap-3 md:overflow-visible md:pb-0">
+      {% for photo in project.gallery.all %}
+      {# Opens the viewer below (static/js/gallery.js); without JS it opens the image itself. #}
+      <a href="{{ photo.image.url }}" data-gallery-item
+         data-alt="{% if photo.caption %}{{ photo.caption }}{% else %}{{ project.title }} screenshot {{ forloop.counter }}{% endif %}"
+         data-caption="{{ photo.caption }}"
+         class="block aspect-[4/3] w-[280px] shrink-0 overflow-hidden rounded-img bg-placeholder md:w-auto">
+        <img src="{{ photo.image.url }}" alt="{% if photo.caption %}{{ photo.caption }}{% else %}{{ project.title }} screenshot {{ forloop.counter }}{% endif %}" loading="lazy" class="size-full object-cover">
+      </a>
+      {% endfor %}
+    </div>
+
+    {# Full screen image viewer. <dialog> gives Escape-to-close and keeps keyboard focus inside. #}
+    <dialog data-lightbox aria-label="Gallery image viewer"
+            class="fixed inset-0 m-0 size-full max-h-none max-w-none bg-black/90 p-0 text-white backdrop:bg-black/60">
+      <div data-lightbox-stage class="flex size-full flex-col items-center justify-center gap-3 px-4 pt-16 pb-6 md:px-20">
+        <figure class="flex max-h-full flex-col items-center gap-3">
+          <img data-lightbox-img alt="" class="max-h-[75vh] w-auto max-w-full rounded-img object-contain">
+          <figcaption data-lightbox-caption class="text-center text-sm text-white/80" hidden></figcaption>
+        </figure>
+        <p data-lightbox-count class="text-[13px] text-white/70 tabular-nums" aria-live="polite"></p>
+      </div>
+
+      <button type="button" data-lightbox-close aria-label="Close"
+              class="absolute top-3 right-3 inline-flex size-11 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 md:top-5 md:right-5">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><line x1="6" y1="6" x2="18" y2="18"/><line x1="18" y1="6" x2="6" y2="18"/></svg>
+      </button>
+      <button type="button" data-lightbox-prev aria-label="Previous image"
+              class="absolute bottom-5 left-4 inline-flex size-11 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 md:top-1/2 md:bottom-auto md:left-5 md:-translate-y-1/2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 6 9 12 15 18"/></svg>
+      </button>
+      <button type="button" data-lightbox-next aria-label="Next image"
+              class="absolute right-4 bottom-5 inline-flex size-11 items-center justify-center rounded-full bg-white/10 hover:bg-white/20 md:top-1/2 md:right-5 md:bottom-auto md:-translate-y-1/2">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+    </dialog>
+  </section>
+  {% endif %}
+
+  {# --- Next project (hidden when this is the only published one) --- #}
+  {% if next_project %}
+  <section class="pb-14 md:pb-24">
+    <a href="{{ next_project.get_absolute_url }}" class="card flex items-center justify-between gap-3 p-5 text-ink hover:border-line-strong md:gap-4 md:px-8 md:py-7">
+      <span class="flex flex-col gap-1">
+        <span class="text-[11px] font-semibold uppercase tracking-tag text-subtle md:text-xs">Next project</span>
+        <span class="font-display text-[19px] font-semibold tracking-[-0.015em] md:text-2xl md:tracking-heading">{{ next_project.title }}</span>
+      </span>
+      <span class="text-xl md:text-[22px]" aria-hidden="true">→</span>
+    </a>
+  </section>
+  {% endif %}
+
+</div>
+{% endblock %}

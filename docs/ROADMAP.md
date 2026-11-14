@@ -7,7 +7,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | Sprint | Name | Status |
 | --- | --- | --- |
 | 0 | Project setup | Done |
-| 1 | Models and admin | Not started |
+| 1 | Models and admin | Done |
 | 2 | Design system and layout shell | Not started |
 | 3 | Home page | Not started |
 | 4 | Project detail page | Not started |
@@ -51,12 +51,12 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **You validate:**
 
-- [ ] `python manage.py seed_demo` runs twice without duplicating data
-- [ ] Site settings opens as a single page with no Add or Delete
-- [ ] You can create a project with 4 features, 5 stack chips and 3 gallery images in one screen
-- [ ] Dragging projects changes their order; featured and published toggle from the list
-- [ ] A 10 MB image or a .exe upload is rejected with a clear message
-- [ ] `/admin/` returns 404; the custom admin path works
+- [x] `python manage.py seed_demo` runs twice without duplicating data
+- [x] Site settings opens as a single page with no Add or Delete
+- [x] You can create a project with 4 features, 5 stack chips and 3 gallery images in one screen
+- [x] Dragging projects changes their order; featured and published toggle from the list
+- [x] A 10 MB image or a .exe upload is rejected with a clear message
+- [x] `/admin/` returns 404; the custom admin path works
 
 ## Sprint 2: Design system and layout shell
 
@@ -142,6 +142,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - WebP thumbnails, lazy loading, sizes; query count check.
 - Accessibility pass (focus, alt text, contrast); custom 500 page.
 - Tests for models, views and the form.
+- Admin look: modern theme (for example `django-unfold`), cleaner field layout on the project and experience pages.
 
 **You validate:**
 
@@ -150,6 +151,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - [ ] `/resume/` downloads the current PDF; replacing it in admin changes the download
 - [ ] Tabbing through every page shows a visible focus ring on every link and button
 - [ ] All tests pass
+- [ ] The admin looks clean and the project edit page is easy to fill in
 
 ## Sprint 7: Deploy and go live
 
@@ -162,14 +164,14 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - `Dockerfile` and `docker-compose.yml` (web with Gunicorn, Caddy).
 - Production settings; Caddyfile with HTTPS and `www` → apex redirect.
 - Volumes for database and media; `collectstatic`.
-- Admin 2FA (`django-otp`) and `django-axes`.
+- Admin login rate limiting with `django-axes`.
 - Daily backup script, 14-day retention.
 - `DEPLOY.md` with step-by-step deploy and update instructions.
 
 **You validate:**
 
 - [ ] `https://icarokucha.com` loads with a valid certificate; `www` and `http` redirect to it
-- [ ] Admin login requires the 2FA code
+- [ ] Too many wrong admin passwords lock the login for a while
 - [ ] A contact message sends a real email to your inbox
 - [ ] Restarting the containers keeps all content and images
 - [ ] A backup file appears after the cron runs, and restoring it locally works

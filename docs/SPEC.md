@@ -141,7 +141,7 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 
 **TypeTag:** name ("Computer Vision"), slug, order. Drives Home filters.
 
-**Tech:** name ("Django"), slug, icon (optional).
+**Tech:** name ("Django"), slug.
 
 **Project**
 
@@ -211,7 +211,7 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 ## 5. Admin requirements
 
 - **Private URL** from `ADMIN_PATH` in `.env` (for example `/painel-8x2k/`), never `/admin/`.
-- **Login security:** strong password, 2FA with `django-otp` (TOTP), login rate limiting with `django-axes`.
+- **Login security:** strong password and login rate limiting with `django-axes` (no 2FA: one admin user).
 - **Site settings:** a single edit page, no Add or Delete. Fieldsets: Hero, About, Links & resume, SEO, Section toggles.
 - **Projects list:** cover thumbnail, title, type tags, featured, published, order. `is_featured` and `is_published` editable in the list. Drag-and-drop ordering. Filters: type tag, featured, published. Search by title.
 - **Project edit page:** fieldsets Basics, Media, Content, Links, SEO. Sortable inlines for Key features, Stack, Gallery. Image previews. "View on site" button.
@@ -220,6 +220,7 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 - **Contact inbox:** date, name, email, topic, read, spam; newest first; unread count visible; bulk "Mark as read" and "Mark as spam"; messages read-only.
 - **Uploads:** images max 5 MB (jpg, png, webp), resume PDF max 5 MB; anything else rejected with a clear message.
 - **Branding:** site name in the admin header instead of "Django administration".
+- **Look and layout (Sprint 6):** a modern admin theme (for example `django-unfold`), related fields side by side, rarely used sections (SEO, links) collapsed, clear labels and help text.
 
 ## 6. URL routes
 
@@ -236,7 +237,7 @@ Eight public GET routes, one form POST and the private admin. Every page route r
 | GET | `/robots.txt` | template view | Allow all, sitemap link, block admin path |
 | GET | `/healthz/` | `healthz` | "ok" for uptime checks |
 | GET | `/media/...`, `/static/...` | Caddy / WhiteNoise | Uploads, CSS, JS |
-| GET/POST | `/<ADMIN_PATH>/` | Django admin | Private CMS, 2FA |
+| GET/POST | `/<ADMIN_PATH>/` | Django admin | Private CMS, rate-limited login |
 
 `/resume/` gives a stable link for LinkedIn and applications that always serves the latest uploaded PDF.
 
@@ -260,7 +261,7 @@ These are acceptance criteria for every sprint.
 
 - `DEBUG=False` in production; secrets only in env vars.
 - HTTPS (Caddy), HSTS, secure + HttpOnly cookies, CSRF on the form.
-- Admin on secret path with 2FA and rate-limited login.
+- Admin on secret path with rate-limited login.
 - Uploads restricted by type and size; randomized filenames.
 
 **Accessibility**

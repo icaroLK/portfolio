@@ -31,12 +31,15 @@ ADMIN_PATH = env("ADMIN_PATH").strip("/")
 # --- Apps ---
 
 INSTALLED_APPS = [
-    "django.contrib.admin",
+    # Our admin site (shows the site name in the header), replaces django.contrib.admin.
+    "config.admin.PortfolioAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    # Drag-and-drop ordering in the admin
+    "adminsortable2",
     # Our apps
     "portfolio",
     "contact",

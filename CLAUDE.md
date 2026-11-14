@@ -8,7 +8,7 @@ icarokucha.com: Ícaro's personal portfolio. A Django site with a custom admin-d
 
 ## How we work together (most important section)
 
-Ícaro wants to follow and validate every step. He is learning Django while building this, so the process matters as much as the code.
+Ícaro wants to follow along while he learns Django. He validates what he can see and click, not the code: Claude builds and tests the code, Ícaro checks behavior and looks.
 
 1. **One sprint at a time.** Only work on the sprint Ícaro names. Never start the next sprint on your own.
 2. **Plan first, then wait.** Before writing any code, show a short plan:
@@ -17,14 +17,9 @@ icarokucha.com: Ícaro's personal portfolio. A Django site with a custom admin-d
    - files you will create or change
    - anything in the spec that is unclear or that you would change, as questions
    Then stop and wait for Ícaro to say "go" (or to correct the plan).
-3. **Small steps with check-ins.** Build one step of the plan, then stop and report. Do not build the whole sprint in one go.
-4. **After each step, explain in simple terms.** Use this format:
-   - **What I did:** 2 to 4 short sentences, plain language, no jargon without a one-line explanation.
-   - **Why:** one or two sentences on why it is done this way.
-   - **Files touched:** short list.
-   - **How to check it:** exact commands to run and what Ícaro should see (URL, page, admin screen).
-   Then wait for "ok" or feedback before the next step.
-5. **End of sprint.** Run `python manage.py test`, then give Ícaro the sprint's "You validate" checklist from `docs/ROADMAP.md` with exact commands. When he confirms everything passes, tick the sprint's boxes in `docs/ROADMAP.md`, update the status table, and commit.
+3. **Build the steps, test them yourself.** Work through the plan step by step and test each step yourself (tests, Django test client). Between steps, send one or two casual lines on what was done so Ícaro can follow or ask "why?". Do not wait for approval between steps and do not ask him to validate code.
+4. **Keep messages short and casual.** A few bullets, no long blocks. Explain a "why" only when it is not obvious.
+5. **End of sprint.** Run `python manage.py test`, then give Ícaro the sprint's "You validate" checklist from `docs/ROADMAP.md` as click-by-click instructions: exact command or URL, what to click, what he should see. This is his real validation. From Sprint 2 on, he also checks that pages look like the designs. When he confirms everything passes, tick the sprint's boxes in `docs/ROADMAP.md`, update the status table, and commit.
 6. **When something is wrong,** fix only what was reported. Explain in one or two sentences what caused it.
 7. **Ask instead of guessing.** If a requirement is missing or contradictory, ask one clear question. Never invent features that are not in the spec.
 

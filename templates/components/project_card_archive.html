@@ -1,0 +1,20 @@
+{% comment %}
+  Small archive project card. The whole card is one link.
+  Usage: {% include "components/project_card_archive.html" %} inside a loop with `project`.
+  Mobile: compact row with a 96 px thumbnail. 768 px+: image on top, stack line below.
+  Needs project.type_tags and project.stack prefetched (Project.objects.for_cards()).
+{% endcomment %}
+<a href="{{ project.get_absolute_url }}"
+   class="card flex items-center gap-3.5 p-2 text-ink md:flex-col md:items-stretch md:gap-1 md:p-2.5">
+  <div class="size-24 shrink-0 overflow-hidden rounded-[10px] bg-placeholder md:h-[180px] md:w-full">
+    <img src="{{ project.cover_image.url }}" alt="{{ project.title }}" loading="lazy" class="size-full object-cover">
+  </div>
+  <div class="flex min-w-0 flex-col gap-1 pr-2 md:gap-2 md:px-2.5 md:pt-3.5 md:pb-2.5">
+    {% include "components/type_tags.html" with tags=project.type_tags.all size="sm" %}
+    <h3 class="font-display text-base leading-snug font-semibold tracking-[-0.01em] md:text-xl md:tracking-[-0.015em]">{{ project.title }}</h3>
+    <p class="text-[13px] leading-[1.45] text-body-soft md:text-sm md:leading-[1.55]">{{ project.pitch }}</p>
+    {% if project.stack.all %}
+    <span class="hidden text-xs text-subtle md:block">{% for item in project.stack.all|slice:":3" %}{{ item.tech.name }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
+    {% endif %}
+  </div>
+</a>

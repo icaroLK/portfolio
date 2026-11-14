@@ -29,6 +29,30 @@ class PublishedQuerySet(models.QuerySet):
         return self.filter(is_published=True)
 
 
+class ProjectQuerySet(PublishedQuerySet):
+    """Project lists for the Home page. Each one is published only, in admin order."""
+
+    def featured(self):
+        return self.published().filter(is_featured=True)
+
+    def archive(self):
+        return self.published().filter(is_featured=False)
+
+    def for_cards(self):
+        # Load tags and stack (with each tech) in 3 extra queries in total,
+        # instead of 2 more queries for every card on the page.
+        return self.prefetch_related(
+            "type_tags",
+            models.Prefetch("stack", queryset=ProjectTech.objects.select_related("tech")),
+        )
+
+
+class TypeTagQuerySet(models.QuerySet):
+    def in_archive(self):
+        """Tags used by at least one published, non-featured project (the Home filters)."""
+        return self.filter(projects__is_published=True, projects__is_featured=False).distinct()
+
+
 # --- Site settings (one row only) ---
 
 
@@ -106,6 +130,8 @@ class TypeTag(TimeStampedModel):
     slug = models.SlugField(max_length=60, unique=True)
     order = models.PositiveIntegerField(default=0, db_index=True)
 
+    objects = TypeTagQuerySet.as_manager()
+
     class Meta:
         ordering = ["order"]
 
@@ -166,7 +192,7 @@ class Project(TimeStampedModel):
         max_length=160, blank=True, help_text="Leave empty to use the pitch."
     )
 
-    objects = PublishedQuerySet.as_manager()
+    objects = ProjectQuerySet.as_manager()
 
     class Meta:
         ordering = ["order"]

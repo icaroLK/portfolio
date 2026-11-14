@@ -1,0 +1,25 @@
+{% comment %}
+  Large featured project card. The whole card is one link.
+  Usage: {% include "components/project_card_featured.html" %} inside a loop with `project`.
+  Desktop (1024 px+): cover left, text right. Smaller screens: cover on top.
+  Needs project.type_tags and project.stack prefetched (Project.objects.for_cards()).
+{% endcomment %}
+<a href="{{ project.get_absolute_url }}"
+   class="card-lg flex flex-col overflow-hidden p-2 text-ink lg:grid lg:grid-cols-2 lg:p-0">
+  <div class="lg:p-3">
+    <div class="h-[200px] overflow-hidden rounded-img bg-placeholder lg:h-full lg:min-h-80">
+      <img src="{{ project.cover_image.url }}" alt="{{ project.title }}" class="size-full object-cover">
+    </div>
+  </div>
+  <div class="flex flex-col justify-center gap-2.5 px-3 pt-[18px] pb-3 lg:gap-4 lg:px-11 lg:py-10">
+    {% include "components/type_tags.html" with tags=project.type_tags.all %}
+    <h3 class="font-display text-[26px] leading-tight font-semibold tracking-[-0.025em] lg:text-[34px]">{{ project.title }}</h3>
+    <p class="text-[15px] leading-[1.55] text-body-soft lg:text-[17px] lg:leading-relaxed">{{ project.pitch }}</p>
+    {% if project.stack.all %}
+    <div class="flex flex-wrap gap-1.5">
+      {% for item in project.stack.all|slice:":3" %}{% include "components/chip.html" with label=item.tech.name %}{% endfor %}
+    </div>
+    {% endif %}
+    <span class="pt-1 text-sm font-medium lg:pt-2">View project →</span>
+  </div>
+</a>

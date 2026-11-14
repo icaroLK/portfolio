@@ -1,0 +1,18 @@
+{% comment %}
+  Segmented filter for the Home archive. Plain links (?type=<slug>), so it works without JS.
+  Usage: {% include "components/filter_bar.html" with tags=filter_tags active=active_type %}
+  Each link ends in #more-projects so the page lands back on the archive after reloading.
+  On mobile the track scrolls sideways instead of wrapping.
+{% endcomment %}
+{% url 'portfolio:home' as home_url %}
+<nav aria-label="Filter projects by type"
+     class="flex max-w-full gap-1 overflow-x-auto rounded-full bg-track p-1 md:flex-wrap">
+  {% with base="inline-flex min-h-11 shrink-0 items-center rounded-full px-3.5 text-[13px] whitespace-nowrap md:px-4" on="bg-surface font-medium text-ink shadow-[0_1px_2px_rgba(0,0,0,0.06)]" off="text-body-soft hover:text-ink" %}
+  <a href="{{ home_url }}#more-projects"
+     class="{{ base }} {% if not active %}{{ on }}{% else %}{{ off }}{% endif %}"{% if not active %} aria-current="page"{% endif %}>All</a>
+  {% for tag in tags %}
+  <a href="{{ home_url }}?type={{ tag.slug }}#more-projects"
+     class="{{ base }} {% if active == tag.slug %}{{ on }}{% else %}{{ off }}{% endif %}"{% if active == tag.slug %} aria-current="page"{% endif %}>{{ tag.name }}</a>
+  {% endfor %}
+  {% endwith %}
+</nav>

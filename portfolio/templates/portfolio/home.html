@@ -1,11 +1,58 @@
 {% extends "base.html" %}
 
-{# Temporary page. Sprint 3 replaces it with the real home page. #}
-
 {% block content %}
-<div class="mx-auto flex max-w-site flex-col gap-4 px-5 py-24 md:px-8">
-  <p class="text-xs font-semibold uppercase tracking-eyebrow text-subtle">Placeholder</p>
-  <h1 class="font-display text-4xl font-semibold tracking-display">The site is running.</h1>
-  <p class="text-lg text-muted">The real home page arrives in Sprint 3.</p>
+<div class="mx-auto max-w-site px-5 md:px-8">
+
+  {# --- Hero --- #}
+  <section class="flex flex-col gap-[18px] py-12 md:gap-6 md:pt-24 md:pb-20">
+    {% if site.show_status_badge and site.status_badge_text %}
+      {% include "components/status_badge.html" with text=site.status_badge_text %}
+    {% endif %}
+    <h1 class="max-w-[860px] font-display text-4xl leading-[1.06] font-semibold tracking-display md:text-6xl md:leading-[1.04]">{{ site.headline }}</h1>
+    {% if site.subheadline %}
+      <p class="max-w-[620px] text-base leading-relaxed text-muted md:text-lg">{{ site.subheadline }}</p>
+    {% endif %}
+    <div class="flex flex-col gap-2.5 pt-1.5 md:flex-row md:flex-wrap md:gap-3 md:pt-2">
+      {# "See my work" jumps to the featured section, or to the archive when nothing is featured. #}
+      {% if featured_projects %}
+        {% include "components/button.html" with href="#featured" label="See my work" extra_class="w-full rounded-img md:w-auto md:rounded-btn" %}
+      {% else %}
+        {% include "components/button.html" with href="#more-projects" label="See my work" extra_class="w-full rounded-img md:w-auto md:rounded-btn" %}
+      {% endif %}
+      {% include "components/button.html" with href="/about/#contact" label="Contact me" variant="secondary" extra_class="w-full rounded-img md:w-auto md:rounded-btn" %}
+    </div>
+  </section>
+
+  {# --- Featured projects (hidden when none are featured) --- #}
+  {% if featured_projects %}
+  <section id="featured" class="flex flex-col gap-[18px] pb-14 md:gap-7 md:pb-20" aria-labelledby="featured-heading">
+    {% include "components/section_heading.html" with eyebrow="Selected work" title="Featured projects" heading_id="featured-heading" %}
+    {% for project in featured_projects %}
+      {% include "components/project_card_featured.html" %}
+    {% endfor %}
+  </section>
+  {% endif %}
+
+  {# --- More projects, with the type filter --- #}
+  <section id="more-projects" class="flex flex-col gap-4 pb-[72px] md:gap-7 md:pb-28" aria-labelledby="archive-heading">
+    <div class="flex flex-col gap-4 md:flex-row md:flex-wrap md:items-end md:justify-between md:gap-5">
+      {% include "components/section_heading.html" with eyebrow="Archive" title="More projects" heading_id="archive-heading" %}
+      {% include "components/filter_bar.html" with tags=filter_tags active=active_type %}
+    </div>
+
+    {% if archive_projects %}
+      <div class="grid gap-4 md:grid-cols-2 md:gap-5 lg:grid-cols-3">
+        {% for project in archive_projects %}
+          {% include "components/project_card_archive.html" %}
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="card flex flex-col items-center gap-2 px-6 py-12 text-center">
+        <p class="text-[15px] text-body-soft">No projects of this type yet.</p>
+        <a href="{% url 'portfolio:home' %}#more-projects" class="inline-flex min-h-11 items-center text-sm font-medium text-ink underline underline-offset-4">See all projects</a>
+      </div>
+    {% endif %}
+  </section>
+
 </div>
 {% endblock %}

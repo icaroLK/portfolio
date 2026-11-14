@@ -20,7 +20,7 @@ class SeedDemoTests(TempMediaMixin, TestCase):
     def test_fills_the_expected_content(self):
         self.seed()
         counts = row_counts()
-        self.assertEqual(counts["Project"], 4)
+        self.assertEqual(counts["Project"], 6)
         self.assertEqual(counts["Experience"], 2)
         self.assertEqual(counts["Education"], 2)
         self.assertEqual(counts["SkillGroup"], 4)

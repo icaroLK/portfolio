@@ -8,7 +8,7 @@ class HomePageTests(TestCase):
         response = self.client.get(reverse("portfolio:home"))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "base.html")
-        self.assertContains(response, "The site is running.")
+        self.assertTemplateUsed(response, "portfolio/home.html")
 
     def test_home_page_loads_css_and_fonts(self):
         response = self.client.get("/")

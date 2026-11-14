@@ -1,6 +1,7 @@
 {% comment %}
   Project type tags as one uppercase line: "COMPUTER VISION · SYSTEM".
   Usage: {% include "components/type_tags.html" with tags=project.type_tags.all %}
+  Sizes step down one notch on mobile (V2 mobile design).
   size="sm" gives the smaller line used on archive cards.
 {% endcomment %}
-<span class="{% if size == 'sm' %}text-[11px]{% else %}text-xs{% endif %} font-semibold uppercase tracking-tag text-subtle">{% for tag in tags %}{{ tag.name }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>
+<span class="{% if size == 'sm' %}text-[10px] md:text-[11px]{% else %}text-[11px] md:text-xs{% endif %} font-semibold uppercase tracking-tag text-subtle">{% for tag in tags %}{{ tag.name }}{% if not forloop.last %} · {% endif %}{% endfor %}</span>

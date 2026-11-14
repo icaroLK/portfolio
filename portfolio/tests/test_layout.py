@@ -1,7 +1,11 @@
 """Header, footer and styleguide (Sprint 2)."""
 
+import re
+
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import connection
 from django.test import TestCase, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 
 from portfolio.models import SiteSettings
@@ -39,7 +43,7 @@ class HeaderTests(TestCase):
     def test_projects_link_active_on_home(self):
         response = self.client.get("/")
         # Both the desktop and the mobile "Projects" link are marked as the current page.
-        self.assertContains(response, 'aria-current="page"', count=2)
+        self.assertContains(response, 'aria-current="page">Projects</a>', count=2)
 
     def test_mobile_menu_button(self):
         response = self.client.get("/")
@@ -90,8 +94,11 @@ class FooterTests(TestCase):
 
     def test_settings_loaded_in_one_query(self):
         make_settings()
-        with self.assertNumQueries(1):
+        with CaptureQueriesContext(connection) as queries:
             self.client.get("/")
+        # The page runs its own project queries; header and footer share one settings query.
+        settings_queries = [q for q in queries if "portfolio_sitesettings" in q["sql"]]
+        self.assertEqual(len(settings_queries), 1)
 
 
 class StyleguideTests(TestCase):
@@ -137,5 +144,7 @@ class NoSidewaysScrollTests(TestCase):
     def test_layout_has_no_wide_fixed_widths(self):
         make_settings()
         html = self.client.get("/").content.decode()
-        for bad in ["w-screen", "min-w-[", "w-[4", "w-[5", "w-[6", "w-[7", "w-[8", "w-[9"]:
-            self.assertNotIn(bad, html)
+        self.assertNotIn("w-screen", html)
+        self.assertNotIn("min-w-[", html)
+        # A fixed width of 400 px or more breaks a phone. max-w-[...] is fine: it only caps.
+        self.assertIsNone(re.search(r"(?<![\w-])w-\[[4-9]\d\d", html))

@@ -9,7 +9,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | 0 | Project setup | Done |
 | 1 | Models and admin | Done |
 | 2 | Design system and layout shell | Done |
-| 3 | Home page | Not started |
+| 3 | Home page | Done |
 | 4 | Project detail page | Not started |
 | 5 | About page and contact form | Not started |
 | 6 | SEO, performance and polish | Not started |
@@ -90,11 +90,11 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **You validate:**
 
-- [ ] Home matches `docs/design/v2-home.html` and `v2-home-mobile.html` with seed data
-- [ ] Unpublishing a project removes it; toggling featured moves it between sections
-- [ ] Reordering in admin reorders the page
-- [ ] Each filter shows only its projects; an empty filter shows the empty state
-- [ ] Turning off the badge hides it
+- [x] Home matches `docs/design/v2-home.html` and `v2-home-mobile.html` with seed data
+- [x] Unpublishing a project removes it; toggling featured moves it between sections
+- [x] Reordering in admin reorders the page
+- [x] Each filter shows only its projects; an empty filter shows the empty state
+- [x] Turning off the badge hides it
 
 ## Sprint 4: Project detail page
 

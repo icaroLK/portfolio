@@ -2,12 +2,24 @@ from django.conf import settings
 from django.http import Http404
 from django.shortcuts import render
 
-from .models import ProjectTech, Skill, Tech, TypeTag
+from .models import Project, ProjectTech, Skill, Tech, TypeTag
 
 
 def home(request):
-    """Placeholder home page. Sprint 3 builds the real one."""
-    return render(request, "portfolio/home.html")
+    """Hero, featured projects and the archive grid, filtered by ?type=<slug>."""
+    archive = Project.objects.archive().for_cards()
+    active_type = request.GET.get("type", "")
+    if active_type:
+        # An unknown slug simply matches nothing, so the empty state shows.
+        archive = archive.filter(type_tags__slug=active_type)
+
+    context = {
+        "featured_projects": Project.objects.featured().for_cards(),
+        "archive_projects": archive,
+        "filter_tags": TypeTag.objects.in_archive(),
+        "active_type": active_type,
+    }
+    return render(request, "portfolio/home.html", context)
 
 
 def styleguide(request):

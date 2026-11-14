@@ -70,12 +70,12 @@ Three public pages (Home, Project detail, About), plus shared header and footer,
    - Buttons: "See my work" (scrolls to Featured projects), "Contact me" (About `#contact`).
 2. **Featured projects** (eyebrow "Selected work")
    - Projects with `is_featured` and `is_published`, admin order. Recommended 3.
-   - Large horizontal card: inset cover image left, text right (type tags as one uppercase line, title, pitch, tech chips, "View project →"). Whole card is one link.
+   - Large horizontal card: inset cover image left, text right (type tags as one uppercase line, title, pitch, first 3 tech chips, "View project →"). Whole card is one link.
    - Mobile: image on top, text below.
    - Section hidden when there are no featured projects.
 3. **More projects** (eyebrow "Archive")
    - Published, non-featured projects, admin order. Uniform grid: 3 columns desktop, 2 tablet, compact rows with a 96 px thumbnail on mobile.
-   - Segmented filter: "All" plus one button per TypeTag that has at least one published project. Uses `?type=<slug>` (works without JS).
+   - Segmented filter: "All" plus one button per TypeTag that has at least one published project in this section (non-featured). Uses `?type=<slug>` (works without JS).
    - Empty state text when a filter has no projects.
 
 ### Project detail (`/projects/<slug>/`)

@@ -62,6 +62,16 @@
 }
 
 @layer base {
+  /*
+    In-page links like "See my work" glide down instead of jumping, so it is clear
+    the page is scrolling and not changing. Skipped for people who ask for less motion.
+  */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+
   /* One clear focus ring for every link, button and input when using the keyboard. */
   :focus-visible {
     outline: 2px solid var(--color-ink);

@@ -145,6 +145,34 @@ PROJECTS = [
             ("Telegram API", "messages"),
         ],
     },
+    {
+        "title": "Landing Page Demo",
+        "pitch": "Placeholder. A fast one-page site that turns visitors into customers.",
+        "tags": ["Website"],
+        "role": "Demo project",
+        "period": "2026",
+        "is_featured": False,
+        "what_it_does": "Placeholder. Plain-language explanation of the landing page.",
+        "features": [],
+        "stack": [
+            ("Django", "website"),
+            ("Docker", "deploy"),
+        ],
+    },
+    {
+        "title": "Invoice Reminder Automation",
+        "pitch": "Placeholder. Sends clients a friendly reminder before each invoice is due.",
+        "tags": ["Automation"],
+        "role": "Demo project",
+        "period": "2026",
+        "is_featured": False,
+        "what_it_does": "Placeholder. Plain-language explanation of the automation.",
+        "features": [],
+        "stack": [
+            ("n8n", "workflows"),
+            ("OpenAI", "message text"),
+        ],
+    },
 ]
 
 EXPERIENCES = [

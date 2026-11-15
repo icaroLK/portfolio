@@ -11,6 +11,6 @@ if ($args.Count -eq 0) {
     exit 1
 }
 
-$Remote = "cd /opt/portfolio/app && sudo docker compose exec web python manage.py $($args -join ' ')"
-# "-- -t" gives the command a real terminal, so it can ask questions (like a password).
-Invoke-Step "running manage.py $($args -join ' ')" { gcloud compute ssh @Gcloud $Vm --command $Remote -- -t }
+$Command = $args -join " "
+$Remote = "cd /opt/portfolio/app && sudo docker compose exec web python manage.py $Command"
+Invoke-Step "running manage.py $Command" { Invoke-Server $Remote -Tty }

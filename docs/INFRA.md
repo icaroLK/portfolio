@@ -76,6 +76,8 @@ The console's "Monthly estimate" shows about US$6/month for the e2-micro. That e
 
 Compute Engine > VM instances > `portfolio-vm` > **SSH**. A terminal opens in the browser (Google routes it through its own network, since there is no IPv4).
 
+The deploy scripts on your PC use a second way in: SSH through the Cloudflare Tunnel (`ssh.icarokucha.com`, section 3), as the server user `deploy`. Setup: `DEPLOY.md`, step 1.
+
 ## 2. Inside the server
 
 Everything below was run in that SSH terminal.
@@ -90,6 +92,7 @@ Everything below was run in that SSH terminal.
 | cloudflared | Installed from `pkg.cloudflare.com` (apt repo) | The tunnel program |
 | cloudflared service | `sudo cloudflared service install <token>` | Starts the tunnel on every boot |
 | cloudflared over IPv6 | `/etc/systemd/system/cloudflared.service.d/ipv6.conf` with `Environment=TUNNEL_EDGE_IP_VERSION=6` | By default cloudflared tries IPv4, which the server does not have |
+| Deploy user | User `deploy`, key-only login, `/etc/sudoers.d/91-deploy` | Used by the deploy scripts through the tunnel. Created by hand, so Google's console never removes its rights |
 | Test page | Docker container `test-page` (`nginx:alpine`) on `127.0.0.1:8000` | Placeholder to prove the path works. The first deploy removes it. |
 
 ### Things that work and don't work without IPv4
@@ -121,6 +124,8 @@ sudo journalctl -u cloudflared -n 30 --no-pager  # tunnel logs ("Registered tunn
 | Route | Published application: `icarokucha.com` -> `http://localhost:8000` |
 | DNS record | `CNAME icarokucha.com -> <tunnel-id>.cfargotunnel.com`, created automatically by the route |
 | Still to add | Same route for `www.icarokucha.com` |
+| SSH route | `ssh.icarokucha.com` -> `ssh://localhost:22`, for the deploy scripts |
+| Access application | `Server SSH` (Zero Trust > Access > Applications): only your email passes, one-time PIN login. Guards the SSH route |
 
 The account also has two old tunnels (`n8n-digitalocean`, `tunel-kucha-cloudflare`), both down. They are unrelated to this site.
 

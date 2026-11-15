@@ -166,7 +166,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - [ ] Same tunnel route for `www.icarokucha.com`
 - [ ] Billing > Reports shows R$0 net cost after a full day
 - [ ] Resend account with `icarokucha.com` verified (DEPLOY.md, step 3)
-- [ ] Google Cloud CLI installed on the PC (DEPLOY.md, step 1)
+- [ ] SSH through the tunnel: `ssh` route, Access login, deploy user (DEPLOY.md, step 1)
 
 **Build:**
 
@@ -175,7 +175,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - Production settings for Cloudflare: trust `X-Forwarded-Proto`, read the visitor IP from `CF-Connecting-IP` (contact rate limit and admin lockout), `www` → apex redirect. Update the code comments that still describe Caddy as the HTTPS front.
 - Volumes for database and media; `collectstatic`.
 - Admin login rate limiting with `django-axes`.
-- Deploy from Ícaro's PC with one command (GitHub has no IPv6, so the server cannot `git pull`).
+- Deploy from Ícaro's PC with one command (GitHub has no IPv6, so the server cannot `git pull`). The PC connects over SSH through the same Cloudflare Tunnel, behind a Cloudflare Access login.
 - Email provider over IPv6: Resend's and Brevo's SMTP servers are IPv4 only, their APIs have IPv6. Resend through its HTTP API (`django-anymail`).
 - Daily backup script, 14-day retention, kept on the server (off-server copy dropped by Ícaro on 2026-11-15; `deploy/get-backup.ps1` downloads one on demand).
 - Remove the `test-page` nginx container.

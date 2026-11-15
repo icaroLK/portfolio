@@ -3,28 +3,41 @@
 How the code on your PC becomes https://icarokucha.com. Where the server lives and why: [`docs/INFRA.md`](docs/INFRA.md).
 
 ```
-your PC --(deploy.ps1, through Google's IAP tunnel)--> portfolio-vm
 visitor --> Cloudflare (HTTPS) --> tunnel --> Caddy :8000 --> Django/Gunicorn :8001
+your PC --(deploy.ps1, ssh)--> Cloudflare (your login) --> same tunnel --> server SSH :22
 ```
 
 The server cannot download from GitHub (GitHub has no IPv6, the server has only IPv6). So your PC packs the latest commit and copies it to the server, and the server builds and restarts the site.
 
 ## First time (once)
 
-### 1. Install the Google Cloud CLI on your PC
+### 1. Open a way in for your PC, through the tunnel
 
-1. Download and run the installer: https://cloud.google.com/sdk/docs/install (Windows tab, `GoogleCloudSDKInstaller.exe`). Keep the default options.
-2. At the end it opens a terminal and asks you to log in: pick your Google account in the browser.
-3. When it asks for a project, choose `icarokucha-portfolio`.
-4. Open a **new** PowerShell in the project folder and check:
+The server has no public IPv4 and no open ports. Your PC gets in through the same Cloudflare Tunnel as the site, behind a Cloudflare login that only your email passes. Your PC already has `cloudflared` and `ssh`, so nothing new to install.
 
-   ```powershell
-   gcloud compute instances list
-   ```
+**a. The login (do this first, so the door is never open without it).** Cloudflare dashboard > Zero Trust > Access > Applications > Add an application > Self-hosted:
 
-   You should see `portfolio-vm` with status `RUNNING`.
+- Application name: `Server SSH`
+- Public hostname: subdomain `ssh`, domain `icarokucha.com`
+- Policy: create a new one, name `Only me`, action **Allow**, include **Emails** = your email
+- Login method: One-time PIN (the default)
+- Save
 
-The first deploy also creates an SSH key for you. If a window asks for a passphrase, press Enter twice (no passphrase).
+**b. The route.** Zero Trust > Networks > Tunnels > `portfolio-vm` > Published application routes > Add a published application route:
+
+- Subdomain `ssh`, domain `icarokucha.com`
+- Service type **SSH**, URL `localhost:22`
+- Save
+
+**c. The deploy user on the server.** Your PC has a deploy key at `%USERPROFILE%\.ssh\icarokucha_deploy` (make one with `ssh-keygen -t ed25519 -N '""' -f $HOME\.ssh\icarokucha_deploy` if it is missing). Open the browser SSH window (Compute Engine > VM instances > `portfolio-vm` > SSH) and paste this line, with the content of `icarokucha_deploy.pub` between the quotes:
+
+```bash
+KEY='ssh-ed25519 AAAA... deploy@icarokucha'; id deploy >/dev/null 2>&1 || sudo useradd -m -s /bin/bash -p '*' deploy; echo 'deploy ALL=(ALL) NOPASSWD:ALL' | sudo tee /etc/sudoers.d/91-deploy >/dev/null; sudo chmod 440 /etc/sudoers.d/91-deploy; sudo install -d -m 700 -o deploy -g deploy /home/deploy/.ssh; echo "$KEY" | sudo tee /home/deploy/.ssh/authorized_keys >/dev/null; sudo chown deploy:deploy /home/deploy/.ssh/authorized_keys; sudo chmod 600 /home/deploy/.ssh/authorized_keys; echo 'deploy user ready'
+```
+
+It ends with `deploy user ready`. This user belongs to the server itself, so Google's console never removes its rights (unlike your browser SSH user, see `docs/INFRA.md`).
+
+The first time a script connects, a browser tab opens with the Cloudflare login: type your email, then the code it emails you. It stays logged in for a while after that.
 
 ### 2. Cloudflare: route www too
 
@@ -130,8 +143,8 @@ git checkout main
 
 ## If something goes wrong
 
-- **`deploy.ps1` says gcloud is not installed:** step 1, then open a new PowerShell.
-- **"Could not find portfolio-vm":** run `gcloud auth login` and `gcloud config set project icarokucha-portfolio`.
+- **"Failed: uploading the code" right away:** check step 1. The tunnel must show the `ssh` route, the `Server SSH` application must exist, and the browser login must have finished.
+- **"Permission denied (publickey)":** the key on the server does not match your PC. Paste the step 1c line again with the content of `icarokucha_deploy.pub`.
 - **"The site did not answer":** the script prints the last log lines; the error is usually at the bottom.
 - **Site down, server fine:** check the tunnel (Cloudflare > Tunnels > `portfolio-vm` must be Healthy), then the server commands above.
 - More: `docs/INFRA.md`, section "If something goes wrong".

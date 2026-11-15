@@ -9,6 +9,29 @@ your PC --(deploy.ps1, ssh)--> Cloudflare (your login) --> same tunnel --> serve
 
 The server cannot download from GitHub (GitHub has no IPv6, the server has only IPv6). So your PC packs the latest commit and copies it to the server, and the server builds and restarts the site.
 
+## The easy way: upload one file in the browser
+
+No setup on your PC. Every deploy:
+
+1. Commit your changes, then run `.\deploy\pack.ps1`. It makes `portfolio-upload.tar.gz` in the project folder (the code plus `.env.production`).
+2. Google Cloud > Compute Engine > VM instances > `portfolio-vm` > **SSH**.
+3. In the SSH window, click **Upload file** (top right) and pick `portfolio-upload.tar.gz`.
+4. Paste this line and press Enter:
+
+   ```bash
+   rm -rf /tmp/p && mkdir /tmp/p && tar -xzf ~/portfolio-upload.tar.gz -C /tmp/p && mv /tmp/p/.env.production /tmp/portfolio.env && rm ~/portfolio-upload.tar.gz && sudo bash /tmp/p/deploy/server-deploy.sh /tmp/p
+   ```
+
+   It ends with `Live: commit ... is online.`
+
+**Only the very first time,** create your admin login right after, in the same window:
+
+```bash
+cd /opt/portfolio/app && sudo docker compose exec web python manage.py createsuperuser
+```
+
+The rest of this file is the one-command way (`deploy.ps1` through the tunnel), which needs a one-time setup.
+
 ## First time (once)
 
 ### 1. Open a way in for your PC, through the tunnel

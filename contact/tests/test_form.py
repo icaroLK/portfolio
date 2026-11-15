@@ -143,16 +143,25 @@ class RateLimitTests(ContactFormTestCase):
         ContactMessage.objects.update(created_at=ContactMessage.objects.first().created_at - timedelta(hours=2))
         self.assertRedirects(self.post(), SENT_URL)
 
-    def test_forwarded_header_ignored_by_default(self):
-        # Without a trusted proxy, a fake X-Forwarded-For must not dodge the limit.
+    def test_ip_headers_ignored_by_default(self):
+        # Off the live server, fake IP headers must not dodge the limit.
         for i in range(3):
-            self.post(HTTP_X_FORWARDED_FOR=f"9.9.9.{i}")
-        self.assertEqual(self.post(HTTP_X_FORWARDED_FOR="9.9.9.99").status_code, 400)
+            self.post(HTTP_CF_CONNECTING_IP=f"9.9.9.{i}", HTTP_X_FORWARDED_FOR=f"8.8.8.{i}")
+        self.assertEqual(self.post(HTTP_CF_CONNECTING_IP="9.9.9.99").status_code, 400)
 
-    @override_settings(TRUST_X_FORWARDED_FOR=True)
-    def test_behind_proxy_uses_last_forwarded_address(self):
-        self.post(ip="10.0.0.1", HTTP_X_FORWARDED_FOR="6.6.6.6, 203.0.113.7")
-        self.assertEqual(ContactMessage.objects.get().ip_address, "203.0.113.7")
+    @override_settings(CLIENT_IP_HEADER="HTTP_CF_CONNECTING_IP")
+    def test_behind_cloudflare_uses_connecting_ip(self):
+        self.post(ip="127.0.0.1", HTTP_CF_CONNECTING_IP="2001:db8::7")
+        self.assertEqual(ContactMessage.objects.get().ip_address, "2001:db8::7")
+
+    @override_settings(CLIENT_IP_HEADER="HTTP_CF_CONNECTING_IP")
+    def test_behind_cloudflare_each_visitor_has_own_limit(self):
+        for _ in range(3):
+            self.post(ip="127.0.0.1", HTTP_CF_CONNECTING_IP="203.0.113.7")
+        blocked = self.post(ip="127.0.0.1", HTTP_CF_CONNECTING_IP="203.0.113.7")
+        self.assertEqual(blocked.status_code, 400)
+        other = self.post(ip="127.0.0.1", HTTP_CF_CONNECTING_IP="198.51.100.2")
+        self.assertRedirects(other, SENT_URL)
 
 
 class FormToggleTests(ContactFormTestCase):

@@ -1,0 +1,45 @@
+# The live site: Django (web) and Caddy, on the Google Cloud server. See DEPLOY.md.
+#
+# Both containers use the server's own network (network_mode: host). Docker's default
+# network has no IPv6 and the server has no IPv4, so this is how pip, Resend and the
+# tunnel can reach them. Nothing is exposed to the internet: both listen on localhost,
+# and cloudflared (installed on the server itself) is the only way in.
+#
+# Everything that must survive a restart lives in folders on the server, under /opt/portfolio.
+
+name: portfolio
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"  # keeps container logs from filling the small disk
+    max-file: "3"
+
+services:
+  web:
+    build:
+      context: .
+      network: host  # pip needs the server's IPv6 while building
+    image: portfolio-web
+    network_mode: host
+    restart: unless-stopped
+    env_file: ${PORTFOLIO_HOME:-/opt/portfolio}/.env
+    environment:
+      DATABASE_URL: sqlite:////app/data/db.sqlite3
+      LOG_DIR: /app/logs
+    volumes:
+      - ${PORTFOLIO_HOME:-/opt/portfolio}/data:/app/data
+      - ${PORTFOLIO_HOME:-/opt/portfolio}/media:/app/media
+      - ${PORTFOLIO_HOME:-/opt/portfolio}/logs:/app/logs
+    logging: *logging
+
+  caddy:
+    image: mirror.gcr.io/library/caddy:2-alpine
+    network_mode: host
+    restart: unless-stopped
+    depends_on:
+      - web
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ${PORTFOLIO_HOME:-/opt/portfolio}/media:/srv/media:ro
+    logging: *logging

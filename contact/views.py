@@ -1,8 +1,8 @@
-from django.conf import settings
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
+from config.client_ip import client_ip
 from portfolio.models import SiteSettings
 from portfolio.views import render_about
 
@@ -18,20 +18,6 @@ RATE_LIMIT_ERROR = (
 
 def sent_url():
     return reverse("portfolio:about") + "?sent=1#contact"
-
-
-def client_ip(request):
-    """The visitor's IP address.
-
-    In production Caddy sits in front of Django, so REMOTE_ADDR is Caddy itself
-    and the real address is the last entry Caddy added to X-Forwarded-For.
-    The last entry is used because anything before it can be faked by the visitor.
-    """
-    if settings.TRUST_X_FORWARDED_FOR:
-        forwarded = request.META.get("HTTP_X_FORWARDED_FOR", "")
-        if forwarded:
-            return forwarded.split(",")[-1].strip()
-    return request.META.get("REMOTE_ADDR")
 
 
 @require_POST

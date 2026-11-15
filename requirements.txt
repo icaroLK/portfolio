@@ -16,3 +16,12 @@ django-unfold>=0.110,<0.111
 # "Simple Markdown" in project and experience texts, cleaned of unsafe HTML (Sprint 4)
 Markdown>=3.7,<4
 nh3>=0.3,<0.4
+
+# Locks the admin login after too many wrong passwords (Sprint 7)
+django-axes>=9.0,<10
+
+# Contact emails through Resend's HTTP API; the server cannot reach SMTP over IPv6 (Sprint 7)
+django-anymail[resend]>=15.2,<16
+
+# Runs Django on the server (Sprint 7)
+gunicorn>=27,<28

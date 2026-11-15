@@ -5,6 +5,7 @@ dev.py and prod.py import everything from here and only change what differs.
 Secrets and anything that changes per machine come from the .env file.
 """
 
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -44,12 +45,18 @@ INSTALLED_APPS = [
     # browser never keeps an old site.css after a rebuild. Must sit above staticfiles.
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
+    # Locks the admin login after too many wrong passwords
+    "axes",
+    # Contact emails through an HTTP API (the server cannot reach SMTP, see prod.py)
+    "anymail",
     # Our apps
     "portfolio",
     "contact",
 ]
 
 MIDDLEWARE = [
+    # First, so http://www. goes straight to https:// without a second redirect.
+    "config.middleware.CanonicalHostMiddleware",
     "django.middleware.security.SecurityMiddleware",
     # WhiteNoise must come right after SecurityMiddleware to serve static files.
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -60,6 +67,8 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "config.middleware.NoIndexAdminMiddleware",
+    # Last, as django-axes asks: it turns a lockout into the "try again later" page.
+    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -97,7 +106,24 @@ DATABASES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 
-# --- Passwords ---
+# --- Login and passwords ---
+
+AUTHENTICATION_BACKENDS = [
+    # Checked first: refuses any login from a locked-out IP.
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+# Admin lockout: 5 wrong passwords from the same IP lock the login for 1 hour.
+# Locking by IP (not by username) means an attacker cannot lock you out from elsewhere.
+# Unlock early on the server with: manage.py axes_reset
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(hours=1)
+AXES_LOCKOUT_PARAMETERS = ["ip_address"]
+AXES_RESET_ON_SUCCESS = True
+AXES_CLIENT_IP_CALLABLE = "config.client_ip.client_ip"
+AXES_LOCKOUT_TEMPLATE = "axes_lockout.html"
+AXES_ENABLE_ADMIN = False  # keeps the admin sidebar clean; the command above is enough
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -210,6 +236,12 @@ UNFOLD = {
 # Sender address of the notification emails (the recipient is set in Site settings).
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="webmaster@localhost")
 
-# Only true behind a proxy that sets X-Forwarded-For (Caddy in production).
-# Otherwise visitors could fake their IP and skip the rate limit.
-TRUST_X_FORWARDED_FOR = False
+
+# --- Visitor IP and main address ---
+
+# Request header that holds the visitor's real IP (see config/client_ip.py).
+# Empty on your computer: REMOTE_ADDR is used, so nobody can fake their IP.
+CLIENT_IP_HEADER = None
+
+# The site's one true address, without www (www. redirects to it). Empty = no redirect.
+CANONICAL_HOST = env("CANONICAL_HOST", default="")

@@ -40,7 +40,7 @@ The "endpoints" are the URL routes in section 6. All are `GET` pages except the 
 | Media | Local `media/` folder on the server | Free; backed up with the DB |
 | Admin look and ordering | `django-unfold` | Modern admin theme with built-in drag-and-drop order |
 | Images | `Pillow` + generated WebP thumbnails | Fast pages |
-| Email | Resend or Brevo via SMTP (free tier) | Contact notifications |
+| Email | Resend through its HTTP API (`django-anymail`, free tier) | Contact notifications; SMTP has no IPv6 |
 | Spam | Honeypot + rate limit; Cloudflare Turnstile if needed | Clean inbox |
 | Hosting | Free Google Cloud e2-micro VM (us-east1, IPv6 only, no paid IPv4), public through Cloudflare Tunnel. Details in `docs/INFRA.md` | R$0 forever, HTTPS by Cloudflare, no open ports |
 | Serving | Gunicorn + Caddy (plain HTTP, serves media) in Docker Compose on that VM | Small, simple, same setup on any server later |
@@ -212,7 +212,7 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 ## 5. Admin requirements
 
 - **Private URL** from `ADMIN_PATH` in `.env` (for example `/painel-8x2k/`), never `/admin/`.
-- **Login security:** strong password and login rate limiting with `django-axes` (no 2FA: one admin user).
+- **Login security:** strong password and login rate limiting with `django-axes`: 5 wrong passwords lock that IP for 1 hour (no 2FA: one admin user).
 - **Site settings:** a single edit page, no Add or Delete. Fieldsets: Hero, About, Links & resume, SEO, Section toggles.
 - **Projects list:** cover thumbnail, title, type tags, featured, published, order. `is_featured` and `is_published` editable in the list. Drag-and-drop ordering. Filters: type tag, featured, published. Search by title.
 - **Project edit page:** fieldsets Basics, Media, Content, Links, SEO. Sortable inlines for Key features, Stack, Gallery. Image previews. "View on site" button.
@@ -277,7 +277,7 @@ These are acceptance criteria for every sprint.
 
 **Operations**
 
-- Daily backup of `db.sqlite3` and `media/` (cron + tarball, keep 14 days, copy off the server).
+- Daily backup of `db.sqlite3` and `media/` (systemd timer + tarball, keep 14 days on the server; download with `deploy/get-backup.ps1`).
 - Errors logged to a file; optional Sentry later.
 - Tests for models, views (status codes, published filtering) and the contact form (valid, invalid, honeypot, rate limit).
 

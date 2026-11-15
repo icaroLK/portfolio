@@ -1,0 +1,6 @@
+[Unit]
+Description=Backup of icarokucha.com (database and uploads)
+
+[Service]
+Type=oneshot
+ExecStart=/bin/bash /opt/portfolio/app/deploy/backup.sh

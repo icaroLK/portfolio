@@ -13,7 +13,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | 4 | Project detail page | Done |
 | 5 | About page and contact form | Done |
 | 6 | SEO, performance and polish | Done |
-| 7 | Deploy and go live | Server ready, deploy not started |
+| 7 | Deploy and go live | Built, first deploy pending |
 
 ---
 
@@ -165,7 +165,8 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - [x] Cloudflare Tunnel `portfolio-vm` Healthy; `icarokucha.com` routed to `localhost:8000` (nginx test page for now)
 - [ ] Same tunnel route for `www.icarokucha.com`
 - [ ] Billing > Reports shows R$0 net cost after a full day
-- [ ] Email provider account (Resend or Brevo) with a verified sender
+- [ ] Resend account with `icarokucha.com` verified (DEPLOY.md, step 3)
+- [ ] Google Cloud CLI installed on the PC (DEPLOY.md, step 1)
 
 **Build:**
 
@@ -175,8 +176,8 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - Volumes for database and media; `collectstatic`.
 - Admin login rate limiting with `django-axes`.
 - Deploy from Ícaro's PC with one command (GitHub has no IPv6, so the server cannot `git pull`).
-- Check that the email provider's SMTP or API is reachable over IPv6; pick the one that is.
-- Daily backup script, 14-day retention, copied off the server.
+- Email provider over IPv6: Resend's and Brevo's SMTP servers are IPv4 only, their APIs have IPv6. Resend through its HTTP API (`django-anymail`).
+- Daily backup script, 14-day retention, kept on the server (off-server copy dropped by Ícaro on 2026-11-15; `deploy/get-backup.ps1` downloads one on demand).
 - Remove the `test-page` nginx container.
 - `DEPLOY.md` with step-by-step deploy and update instructions.
 

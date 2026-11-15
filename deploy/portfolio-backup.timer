@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly backup of icarokucha.com
+
+[Timer]
+# Server clock is UTC: 03:30 UTC is 00:30 in Brasilia.
+OnCalendar=*-*-* 03:30:00
+# If the server was off at that time, run as soon as it is back on.
+Persistent=true
+
+[Install]
+WantedBy=timers.target

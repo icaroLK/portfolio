@@ -1,0 +1,29 @@
+# Caddy: the small web server in front of Django on the live server.
+# cloudflared sends every visit here (localhost:8000). Plain HTTP: Cloudflare does HTTPS.
+{
+	admin off
+	auto_https off
+	servers {
+		# cloudflared runs on this same machine. Trusting local addresses keeps the
+		# X-Forwarded-Proto: https header from Cloudflare, so Django knows the visit was secure.
+		trusted_proxies static private_ranges
+	}
+}
+
+http://:8000 {
+	bind 127.0.0.1 [::1]
+	encode zstd gzip
+
+	# Uploaded images and the resume PDF. File names are random, so browsers and Cloudflare can keep them.
+	handle_path /media/* {
+		root * /srv/media
+		header Cache-Control "public, max-age=2592000"
+		header X-Content-Type-Options nosniff
+		file_server
+	}
+
+	# Everything else (pages, CSS, JS) goes to Django.
+	handle {
+		reverse_proxy 127.0.0.1:8001
+	}
+}

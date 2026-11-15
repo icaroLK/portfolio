@@ -90,7 +90,7 @@ Everything below was run in that SSH terminal.
 | cloudflared | Installed from `pkg.cloudflare.com` (apt repo) | The tunnel program |
 | cloudflared service | `sudo cloudflared service install <token>` | Starts the tunnel on every boot |
 | cloudflared over IPv6 | `/etc/systemd/system/cloudflared.service.d/ipv6.conf` with `Environment=TUNNEL_EDGE_IP_VERSION=6` | By default cloudflared tries IPv4, which the server does not have |
-| Test page | Docker container `test-page` (`nginx:alpine`) on `127.0.0.1:8000` | Placeholder to prove the path works. Remove it in Sprint 7. |
+| Test page | Docker container `test-page` (`nginx:alpine`) on `127.0.0.1:8000` | Placeholder to prove the path works. The first deploy removes it. |
 
 ### Things that work and don't work without IPv4
 
@@ -98,10 +98,10 @@ Everything below was run in that SSH terminal.
 | --- | --- |
 | Ubuntu `apt` | **GitHub** (no `git clone` / `git pull` on the server) |
 | Python packages (PyPI) | Docker Hub directly (use the mirror) |
-| Docker via `mirror.gcr.io` | Email provider SMTP: **not tested yet** |
+| Docker via `mirror.gcr.io` | Email SMTP (Resend, Brevo): the site uses Resend's HTTP API instead |
 | Cloudflare, Google | |
 
-Inside Docker containers, outgoing internet also needs IPv6 enabled for the container network (or host networking). Sprint 7 handles this.
+Inside Docker containers, outgoing internet also needs IPv6. The site's containers use host networking for that (`docker-compose.yml`). How the site is deployed and run: `DEPLOY.md`.
 
 ### Useful commands
 

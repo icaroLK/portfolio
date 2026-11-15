@@ -12,7 +12,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | 3 | Home page | Done |
 | 4 | Project detail page | Done |
 | 5 | About page and contact form | Done |
-| 6 | SEO, performance and polish | Not started |
+| 6 | SEO, performance and polish | Done |
 | 7 | Deploy and go live | Not started |
 
 ---
@@ -146,12 +146,12 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **You validate:**
 
-- [ ] Lighthouse mobile: Performance 90+, Accessibility 95+, SEO 95+ on Home and one project
-- [ ] Pasting a project URL into WhatsApp or LinkedIn shows its cover image and pitch
-- [ ] `/resume/` downloads the current PDF; replacing it in admin changes the download
-- [ ] Tabbing through every page shows a visible focus ring on every link and button
-- [ ] All tests pass
-- [ ] The admin looks clean and the project edit page is easy to fill in
+- [x] Lighthouse mobile: Performance 90+, Accessibility 95+, SEO 95+ on Home and one project
+- [x] Share tags (cover image and pitch) checked in the page source; the real WhatsApp/LinkedIn paste moves to Sprint 7
+- [x] `/resume/` downloads the current PDF; replacing it in admin changes the download
+- [x] Tabbing through every page shows a visible focus ring on every link and button
+- [x] All tests pass
+- [x] The admin looks clean and the project edit page is easy to fill in
 
 ## Sprint 7: Deploy and go live
 
@@ -173,6 +173,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - [ ] `https://icarokucha.com` loads with a valid certificate; `www` and `http` redirect to it
 - [ ] Too many wrong admin passwords lock the login for a while
 - [ ] A contact message sends a real email to your inbox
+- [ ] Pasting a project URL into WhatsApp or LinkedIn shows its cover image and pitch
 - [ ] Restarting the containers keeps all content and images
 - [ ] A backup file appears after the cron runs, and restoring it locally works
 - [ ] Real content replaces the seed data: photo, bio, resume, experience, real projects

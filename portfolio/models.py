@@ -202,15 +202,21 @@ class Tech(TimeStampedModel):
 class Project(TimeStampedModel):
     # Basics
     title = models.CharField(max_length=120)
-    slug = models.SlugField(max_length=140, unique=True)
-    pitch = models.CharField(max_length=200, help_text="Plain-language line for cards.")
+    slug = models.SlugField(
+        max_length=140, unique=True, help_text="Web address: /projects/<slug>/. Filled from the title."
+    )
+    pitch = models.CharField(
+        max_length=200, help_text="One plain-language line, shown on cards and under the title."
+    )
     type_tags = models.ManyToManyField(TypeTag, related_name="projects", blank=True)
     role = models.CharField(max_length=80, blank=True, help_text='e.g. "Solo project"')
     period = models.CharField(max_length=40, blank=True, help_text='e.g. "Nov 2026"')
 
     # Media
     cover_image = models.ImageField(
-        upload_to=RandomFilename("projects"), validators=IMAGE_VALIDATORS
+        upload_to=RandomFilename("projects"),
+        validators=IMAGE_VALIDATORS,
+        help_text="Shown on cards and in link previews. Landscape, JPG, PNG or WebP, max 5 MB.",
     )
     video_url = models.URLField(
         blank=True,
@@ -219,24 +225,33 @@ class Project(TimeStampedModel):
     )
 
     # Links
-    live_url = models.URLField(blank=True)
-    repo_url = models.URLField(blank=True)
+    live_url = models.URLField("Live demo link", blank=True, help_text="Empty hides the button.")
+    repo_url = models.URLField("GitHub repo link", blank=True, help_text="Empty hides the button.")
 
     # Content
     what_it_does = models.TextField(help_text="Plain language, for non-technical readers.")
     how_it_works = models.TextField(blank=True, help_text="Technical. Simple Markdown.")
     architecture_image = models.ImageField(
-        upload_to=RandomFilename("projects"), blank=True, validators=IMAGE_VALIDATORS
+        upload_to=RandomFilename("projects"),
+        blank=True,
+        validators=IMAGE_VALIDATORS,
+        help_text="Optional diagram shown under How it works.",
     )
 
     # Visibility and order
-    is_featured = models.BooleanField(default=False)
-    is_published = models.BooleanField(default=True)
+    is_featured = models.BooleanField(
+        "Featured", default=False, help_text="Large card under Featured projects on Home."
+    )
+    is_published = models.BooleanField(
+        "Published", default=True, help_text="Off hides the project everywhere on the site."
+    )
     order = models.PositiveIntegerField(default=0, db_index=True)
 
     # SEO
     seo_description = models.CharField(
-        max_length=160, blank=True, help_text="Leave empty to use the pitch."
+        max_length=160,
+        blank=True,
+        help_text="Text shown by Google and link previews. Empty uses the pitch.",
     )
 
     objects = ProjectQuerySet.as_manager()
@@ -327,16 +342,21 @@ class Experience(TimeStampedModel):
     company = models.CharField(max_length=120)
     location = models.CharField(max_length=120, blank=True, help_text='e.g. "Remote (US)"')
     logo = models.ImageField(
-        upload_to=RandomFilename("logos"), blank=True, validators=IMAGE_VALIDATORS
+        upload_to=RandomFilename("logos"),
+        blank=True,
+        validators=IMAGE_VALIDATORS,
+        help_text="Square works best. Empty shows the first letter of the company.",
     )
-    start_date = models.DateField()
+    start_date = models.DateField(help_text="Only the month and year are shown.")
     end_date = models.DateField(null=True, blank=True, help_text="Empty means Present.")
-    summary = models.CharField(max_length=300, help_text="Always visible.")
+    summary = models.CharField(max_length=300, help_text="One or two lines, always visible.")
     details = models.TextField(
         blank=True, help_text='Simple Markdown. "Show details" appears only when filled.'
     )
-    techs = models.ManyToManyField(Tech, related_name="experiences", blank=True)
-    is_published = models.BooleanField(default=True)
+    techs = models.ManyToManyField(
+        Tech, related_name="experiences", blank=True, help_text="Shown as chips on the card."
+    )
+    is_published = models.BooleanField("Published", default=True)
     order = models.PositiveIntegerField(default=0, db_index=True)
 
     objects = ExperienceQuerySet.as_manager()

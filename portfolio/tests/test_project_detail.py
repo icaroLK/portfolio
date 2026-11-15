@@ -14,16 +14,17 @@ from portfolio.models import (
     TypeTag,
 )
 from portfolio.templatetags.markdown_extras import markdown_filter
+from portfolio.thumbnails import thumbnail
 
 from .helpers import TempMediaMixin, make_png
 
 
 def make_project(title, order, published=True, **fields):
+    fields.setdefault("cover_image", make_png())
     return Project.objects.create(
         title=title,
         pitch=f"{title} pitch",
         what_it_does=f"{title} does things.",
-        cover_image=make_png(),
         order=order,
         is_published=published,
         **fields,
@@ -119,7 +120,9 @@ class FullProjectTests(ProjectDetailTestData):
     def test_gallery_opens_in_the_viewer(self):
         response = self.get(self.full)
         for image in self.full.gallery.all():
-            self.assertContains(response, f'href="{image.image.url}" data-gallery-item')
+            # The viewer opens the 1600 px WebP copy, not the original upload.
+            full = thumbnail(image.image, "gallery")
+            self.assertContains(response, f'href="{full.url}" data-gallery-item')
         self.assertContains(response, 'alt="Shot 0"')
         self.assertContains(response, "<dialog data-lightbox")
         self.assertContains(response, 'aria-label="Close"')

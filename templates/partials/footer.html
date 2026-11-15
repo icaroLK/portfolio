@@ -10,7 +10,7 @@
       {% if site.email %}<li><a href="mailto:{{ site.email }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">Email</a></li>{% endif %}
       {% if site.github_url %}<li><a href="{{ site.github_url }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">GitHub</a></li>{% endif %}
       {% if site.linkedin_url %}<li><a href="{{ site.linkedin_url }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">LinkedIn</a></li>{% endif %}
-      {% if site.resume_pdf %}<li><a href="{{ site.resume_pdf.url }}" class="inline-flex min-h-11 items-center text-body hover:text-ink">Resume</a></li>{% endif %}
+      {% if site.resume_pdf %}<li><a href="{% url 'portfolio:resume' %}" class="inline-flex min-h-11 items-center text-body hover:text-ink">Resume</a></li>{% endif %}
     </ul>
     {% endif %}
   </div>

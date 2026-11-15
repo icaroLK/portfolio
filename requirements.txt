@@ -10,8 +10,8 @@ whitenoise>=6.12,<7
 # Image handling for uploads and thumbnails (Sprint 1+)
 Pillow>=12,<14
 
-# Drag-and-drop ordering in the admin (Sprint 1)
-django-admin-sortable2>=2.4,<3
+# Modern admin theme, with drag-and-drop ordering built in (Sprint 6)
+django-unfold>=0.110,<0.111
 
 # "Simple Markdown" in project and experience texts, cleaned of unsafe HTML (Sprint 4)
 Markdown>=3.7,<4

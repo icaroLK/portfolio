@@ -9,13 +9,13 @@
   <a href="/about/#contact" class="{{ row }} text-muted">Contact</a>
   {% endwith %}
   {% if site.resume_pdf %}
-  <a href="{{ site.resume_pdf.url }}" class="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-line-strong bg-surface px-4 text-[15px] font-medium text-ink">Resume</a>
+  <a href="{% url 'portfolio:resume' %}" class="mt-4 inline-flex min-h-11 items-center justify-center rounded-full border border-line-strong bg-surface px-4 text-[15px] font-medium text-ink">Resume</a>
   {% endif %}
 {% else %}
   <a href="{% url 'portfolio:home' %}" class="inline-flex min-h-11 items-center {% if nav_section == 'projects' %}text-ink{% else %}text-muted hover:text-ink{% endif %}"{% if nav_section == 'projects' %} aria-current="page"{% endif %}>Projects</a>
   <a href="/about/" class="inline-flex min-h-11 items-center {% if nav_section == 'about' %}text-ink{% else %}text-muted hover:text-ink{% endif %}"{% if nav_section == 'about' %} aria-current="page"{% endif %}>About</a>
   <a href="/about/#contact" class="inline-flex min-h-11 items-center text-muted hover:text-ink">Contact</a>
   {% if site.resume_pdf %}
-  <a href="{{ site.resume_pdf.url }}" class="inline-flex min-h-11 items-center rounded-full border border-line-strong px-3.5 text-ink hover:border-ink">Resume</a>
+  <a href="{% url 'portfolio:resume' %}" class="inline-flex min-h-11 items-center rounded-full border border-line-strong px-3.5 text-ink hover:border-ink">Resume</a>
   {% endif %}
 {% endif %}

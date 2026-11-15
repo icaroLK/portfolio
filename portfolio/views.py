@@ -1,6 +1,9 @@
 from django.conf import settings
-from django.http import Http404
-from django.shortcuts import get_object_or_404, render
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
+from django.views.decorators.http import require_GET
+from django.views.defaults import server_error
 
 from contact.forms import ContactForm
 
@@ -62,6 +65,26 @@ def render_about(request, form, status=200):
     return render(request, "portfolio/about.html", context, status=status)
 
 
+def resume_download(request):
+    """Redirect to the current resume PDF, or 404 when none is uploaded."""
+    site = SiteSettings.load()
+    if not site.resume_pdf:
+        raise Http404
+    return redirect(site.resume_pdf.url)
+
+
+@require_GET
+def robots_txt(request):
+    sitemap_url = request.build_absolute_uri(reverse("sitemap"))
+    return render(request, "robots.txt", {"sitemap_url": sitemap_url}, content_type="text/plain")
+
+
+@require_GET
+def healthz(request):
+    """Answer for uptime checks. Does not touch the database, so it stays cheap."""
+    return HttpResponse("ok", content_type="text/plain")
+
+
 def styleguide(request):
     """Every UI component on one page, for design checks. Only exists with DEBUG on."""
     if not settings.DEBUG:
@@ -81,3 +104,10 @@ def preview_404(request):
     if not settings.DEBUG:
         raise Http404
     return render(request, "404.html", status=404)
+
+
+def preview_500(request):
+    """The error page, viewable while DEBUG is on. Uses Django's real 500 handler."""
+    if not settings.DEBUG:
+        raise Http404
+    return server_error(request)

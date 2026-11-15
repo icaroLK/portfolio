@@ -1,0 +1,43 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% comment %}
+  Admin home. Lists the same groups as the sidebar (from UNFOLD["SIDEBAR"] in
+  settings), one under the other in the same order, instead of Django's per-app list.
+{% endcomment %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+  {% include "unfold/helpers/site_branding.html" %}
+{% endblock %}
+
+{% block content %}
+<div class="flex flex-col lg:flex-row gap-6">
+  <div class="flex flex-col grow gap-5">
+    {% for group in sidebar_navigation %}
+      {% if group.items %}
+        <section>
+          <h2 class="bg-base-100 flex flex-row font-semibold h-[38px] items-center mb-3 px-3 rounded-default text-important dark:bg-white/[.02]">
+            {{ group.title }}
+          </h2>
+          <ul class="border border-base-200 rounded-default overflow-hidden shadow-xs dark:border-base-800">
+            {% for item in group.items %}
+              {% if item.has_permission %}
+                <li class="border-b border-base-200 last:border-b-0 dark:border-base-800">
+                  <a href="{{ item.link }}" class="flex items-center py-3 leading-5 px-3 text-important hover:bg-base-50 hover:text-primary-600 dark:hover:bg-white/[.02]">
+                    <span class="material-symbols-outlined md-18 mr-3 w-[18px]" aria-hidden="true">{{ item.icon }}</span>
+                    <span>{{ item.title }}</span>
+                    {% include "unfold/helpers/app_list_badge.html" with item=item %}
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+          </ul>
+        </section>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  {% include "unfold/helpers/history.html" %}
+</div>
+{% endblock %}

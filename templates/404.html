@@ -1,11 +1,12 @@
 {% extends "base.html" %}
+{% load seo %}
 
 {% comment %}
   Shown for any missing page when DEBUG is off (a missing or unpublished project too).
   With DEBUG on, Django shows its own debug page instead: preview this one at /styleguide/404/.
 {% endcomment %}
 
-{% block title %}Page not found · {{ site.site_name }}{% endblock %}
+{% block seo %}{% seo_tags title="Page not found" noindex=True %}{% endblock %}
 
 {% block content %}
 {# Centered both ways: min-h keeps the block in the middle of the space between header and footer. #}

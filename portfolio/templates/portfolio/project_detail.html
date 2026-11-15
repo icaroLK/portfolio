@@ -1,7 +1,8 @@
 {% extends "base.html" %}
-{% load markdown_extras static %}
+{% load images markdown_extras seo static %}
 
-{% block title %}{{ project.title }} · {{ site.site_name }}{% endblock %}
+{# Share previews use the cover image; the description falls back to the pitch. #}
+{% block seo %}{% seo_tags title=project.title description=project.seo_description|default:project.pitch image=project.cover_image og_type="article" %}{% endblock %}
 
 {% block extra_scripts %}
   {% if project.gallery.all %}<script src="{% static 'js/gallery.js' %}" defer></script>{% endif %}
@@ -99,7 +100,8 @@
     <div class="rich-text text-base leading-[1.7] text-body md:text-[17px] md:leading-[1.75]">{{ project.how_it_works|markdown }}</div>
     {% if project.architecture_image %}
       <a href="{{ project.architecture_image.url }}" target="_blank" rel="noopener" class="mt-2 block overflow-hidden rounded-img border border-line bg-surface">
-        <img src="{{ project.architecture_image.url }}" alt="How {{ project.title }} works: architecture diagram" loading="lazy" class="w-full">
+        {% thumbnail project.architecture_image "featured" as diagram %}
+        <img src="{{ diagram.url }}" {{ diagram.size_attrs }} alt="How {{ project.title }} works: architecture diagram" loading="lazy" decoding="async" class="h-auto w-full">
       </a>
     {% endif %}
   </section>
@@ -111,12 +113,13 @@
     <h2 class="font-display text-[22px] font-semibold tracking-heading md:text-[26px]">Gallery</h2>
     <div data-gallery class="-mr-5 flex gap-2.5 overflow-x-auto pb-1 md:mr-0 md:grid md:grid-cols-[repeat(auto-fit,minmax(230px,1fr))] md:gap-3 md:overflow-visible md:pb-0">
       {% for photo in project.gallery.all %}
+      {% thumbnail photo.image "card" as thumb %}{% thumbnail photo.image "gallery" as full %}
       {# Opens the viewer below (static/js/gallery.js); without JS it opens the image itself. #}
-      <a href="{{ photo.image.url }}" data-gallery-item
+      <a href="{{ full.url }}" data-gallery-item
          data-alt="{% if photo.caption %}{{ photo.caption }}{% else %}{{ project.title }} screenshot {{ forloop.counter }}{% endif %}"
          data-caption="{{ photo.caption }}"
          class="block aspect-[4/3] w-[280px] shrink-0 overflow-hidden rounded-img bg-placeholder md:w-auto">
-        <img src="{{ photo.image.url }}" alt="{% if photo.caption %}{{ photo.caption }}{% else %}{{ project.title }} screenshot {{ forloop.counter }}{% endif %}" loading="lazy" class="size-full object-cover">
+        <img src="{{ thumb.url }}" {{ thumb.size_attrs }} decoding="async" alt="{% if photo.caption %}{{ photo.caption }}{% else %}{{ project.title }} screenshot {{ forloop.counter }}{% endif %}" loading="lazy" class="size-full object-cover">
       </a>
       {% endfor %}
     </div>

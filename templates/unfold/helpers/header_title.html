@@ -1,0 +1,19 @@
+{% load admin_crumbs %}
+{% comment %}
+  Breadcrumb at the top of admin pages. Overrides Unfold's version: it starts with Home
+  and skips the Django app crumb and repeats (see portfolio/templatetags/admin_crumbs.py).
+{% endcomment %}
+{% spaceless %}
+    {% url 'admin:index' as home_url %}
+    {% with crumbs=parts|clean_crumbs %}
+        {% if request.path == home_url %}
+            <span class="align-middle inline-block leading-5 min-w-0 truncate tracking-tight">Home</span>
+        {% else %}
+            <a href="{{ home_url }}" class="align-middle inline-block leading-5 min-w-0 truncate tracking-tight">Home</a>
+            {% for part in crumbs %}
+                <span class="material-symbols-outlined inline-block align-middle leading-5 mx-2 text-base-400 dark:text-base-500 rtl:-scale-x-100" aria-hidden="true">chevron_right</span>
+                <{% if part.link %}a href="{{ part.link }}"{% else %}span{% endif %} class="align-middle inline-block leading-5 min-w-0 truncate tracking-tight">{{ part.title|capfirst }}</{% if part.link %}a{% else %}span{% endif %}>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% endspaceless %}

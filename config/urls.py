@@ -5,7 +5,10 @@ Main URL list: maps each web address to the code that answers it.
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.sitemaps.views import sitemap
 from django.urls import include, path
+
+from portfolio.sitemaps import SITEMAPS
 
 urlpatterns = [
     # Private admin path from .env (never the default /admin/).
@@ -14,6 +17,7 @@ urlpatterns = [
     path("", include("portfolio.urls")),
     # Contact form POST (the form itself is on the About page).
     path("", include("contact.urls")),
+    path("sitemap.xml", sitemap, {"sitemaps": SITEMAPS}, name="sitemap"),
 ]
 
 # In dev, Django serves uploaded files (in production Caddy does it).

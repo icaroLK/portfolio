@@ -1,9 +1,9 @@
-{% load static %}<!doctype html>
+{% load static seo %}<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}{{ site.site_name }}{% endblock %}</title>
+  {% block seo %}{% seo_tags %}{% endblock %}
 
   {# Fonts: Inter for body text, Inter Tight for headings. Only the weights we use. #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,9 +15,11 @@
   {% block extra_scripts %}{% endblock %}
 </head>
 <body class="flex min-h-screen flex-col bg-page font-sans text-ink antialiased">
+  {# Keyboard users can jump past the header. Hidden until it gets focus. #}
+  <a href="#main" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:inline-flex focus:min-h-11 focus:items-center focus:rounded-btn focus:bg-ink focus:px-4 focus:text-sm focus:font-medium focus:text-white">Skip to content</a>
   {% include "partials/header.html" %}
   {# flex-1 pushes the footer to the bottom on short pages #}
-  <main id="main" class="flex-1">
+  <main id="main" tabindex="-1" class="flex-1 focus:outline-none">
     {% block content %}{% endblock %}
   </main>
   {% include "partials/footer.html" %}

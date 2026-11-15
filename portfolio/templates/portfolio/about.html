@@ -1,6 +1,7 @@
 {% extends "base.html" %}
+{% load images seo %}
 
-{% block title %}About · {{ site.site_name }}{% endblock %}
+{% block seo %}{% seo_tags title="About" %}{% endblock %}
 
 {% block content %}
 <div class="mx-auto max-w-[920px] px-5 md:px-8">
@@ -9,7 +10,8 @@
   <section class="flex flex-col gap-[18px] pt-11 pb-12 md:flex-row md:flex-wrap md:items-center md:gap-11 md:pt-[88px] md:pb-[72px]">
     <div class="size-[104px] shrink-0 overflow-hidden rounded-full border-[5px] border-surface bg-placeholder shadow-[0_2px_10px_rgba(0,0,0,0.06)] md:size-[168px] md:border-[6px]">
       {% if site.profile_photo %}
-        <img src="{{ site.profile_photo.url }}" alt="{{ site.site_name }}" class="size-full object-cover">
+        {% thumbnail site.profile_photo "avatar" as photo %}
+        <img src="{{ photo.url }}" {{ photo.size_attrs }} alt="{{ site.site_name }}" class="size-full object-cover">
       {% endif %}
     </div>
     <div class="flex flex-col gap-[18px] md:min-w-[300px] md:flex-1">
@@ -19,7 +21,7 @@
       {% endif %}
       <div class="grid grid-cols-2 gap-2.5 md:flex md:flex-wrap md:gap-3 md:pt-1">
         {% if site.resume_pdf %}
-          <a href="{{ site.resume_pdf.url }}" class="btn btn-primary rounded-img px-3 text-sm md:rounded-btn md:px-5 md:text-[15px]"><span class="md:hidden">Resume</span><span class="hidden md:inline">Download resume</span></a>
+          <a href="{% url 'portfolio:resume' %}" class="btn btn-primary rounded-img px-3 text-sm md:rounded-btn md:px-5 md:text-[15px]"><span class="md:hidden">Resume</span><span class="hidden md:inline">Download resume</span></a>
         {% endif %}
         <a href="#contact" class="btn btn-secondary rounded-img px-3 text-sm md:rounded-btn md:px-5 md:text-[15px]">Contact me</a>
       </div>

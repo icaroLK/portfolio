@@ -31,18 +31,19 @@ ADMIN_PATH = env("ADMIN_PATH").strip("/")
 # --- Apps ---
 
 INSTALLED_APPS = [
+    # Modern admin theme. Must come before the admin app.
+    "unfold.apps.BasicAppConfig",  # basic: keeps our admin site below instead of swapping in its own
     # Our admin site (shows the site name in the header), replaces django.contrib.admin.
     "config.admin.PortfolioAdminConfig",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
+    "django.contrib.sitemaps",
     # WhiteNoise also serves CSS/JS in dev, with "always re-check" headers, so the
     # browser never keeps an old site.css after a rebuild. Must sit above staticfiles.
     "whitenoise.runserver_nostatic",
     "django.contrib.staticfiles",
-    # Drag-and-drop ordering in the admin
-    "adminsortable2",
     # Our apps
     "portfolio",
     "contact",
@@ -58,6 +59,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "config.middleware.NoIndexAdminMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -121,6 +123,86 @@ STATIC_ROOT = BASE_DIR / "staticfiles"     # where collectstatic gathers everyth
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"            # uploaded images and the resume PDF
+
+
+# --- Admin look (django-unfold) ---
+
+# Warm grays that match the site's colors (Tailwind "stone" scale).
+_STONE = {
+    "50": "oklch(98.5% .001 106.423)",
+    "100": "oklch(97% .001 106.424)",
+    "200": "oklch(92.3% .003 48.717)",
+    "300": "oklch(86.9% .005 56.366)",
+    "400": "oklch(70.9% .01 56.259)",
+    "500": "oklch(55.3% .013 58.071)",
+    "600": "oklch(44.4% .011 73.639)",
+    "700": "oklch(37.4% .01 67.558)",
+    "800": "oklch(26.8% .007 34.298)",
+    "900": "oklch(21.6% .006 56.043)",
+    "950": "oklch(14.7% .004 49.25)",
+}
+
+
+def _admin_link(name):
+    # Imported here: URLs are not ready yet when settings load.
+    from django.urls import reverse_lazy
+
+    return reverse_lazy(f"admin:{name}")
+
+
+UNFOLD = {
+    "SITE_TITLE": "config.admin.admin_title",
+    "SITE_HEADER": "config.admin.site_name",
+    "SITE_SYMBOL": "edit_note",
+    "SITE_URL": "/",
+    "SHOW_VIEW_ON_SITE": True,
+    "BORDER_RADIUS": "10px",
+    "COLORS": {"base": _STONE, "primary": _STONE},
+    # Three groups of similar size. The name at the top of the sidebar is the Home link
+    # (templates/unfold/helpers/site_icon.html), and the home page lists these same groups.
+    "SIDEBAR": {
+        "show_search": False,
+        "show_all_applications": False,
+        "navigation": [
+            {
+                "title": "Site",
+                "items": [
+                    {"title": "Site settings", "icon": "tune",
+                     "link": _admin_link("portfolio_sitesettings_changelist")},
+                    {"title": "Inbox", "icon": "inbox",
+                     "link": _admin_link("contact_contactmessage_changelist"),
+                     "badge": "config.admin.unread_messages_badge"},
+                    {"title": "Users", "icon": "person",
+                     "link": _admin_link("auth_user_changelist")},
+                ],
+            },
+            {
+                "title": "Projects",
+                "items": [
+                    {"title": "Projects", "icon": "work",
+                     "link": _admin_link("portfolio_project_changelist")},
+                    {"title": "Type tags", "icon": "label",
+                     "link": _admin_link("portfolio_typetag_changelist")},
+                    {"title": "Techs", "icon": "code",
+                     "link": _admin_link("portfolio_tech_changelist")},
+                ],
+            },
+            {
+                "title": "About page",
+                "items": [
+                    {"title": "Experience", "icon": "badge",
+                     "link": _admin_link("portfolio_experience_changelist")},
+                    {"title": "Education", "icon": "school",
+                     "link": _admin_link("portfolio_education_changelist")},
+                    {"title": "Skill groups", "icon": "construction",
+                     "link": _admin_link("portfolio_skillgroup_changelist")},
+                    {"title": "Services", "icon": "storefront",
+                     "link": _admin_link("portfolio_service_changelist")},
+                ],
+            },
+        ],
+    },
+}
 
 
 # --- Contact form ---

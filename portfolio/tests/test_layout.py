@@ -63,9 +63,8 @@ class ResumeLinkTests(TempMediaMixin, TestCase):
         pdf = SimpleUploadedFile("cv.pdf", b"%PDF-1.4 test", content_type="application/pdf")
         make_settings(resume_pdf=pdf)
         response = self.client.get("/")
-        url = SiteSettings.load().resume_pdf.url
-        # Desktop pill, mobile panel and footer.
-        self.assertContains(response, f'href="{url}"', count=3)
+        # Desktop pill, mobile panel and footer, all through the stable /resume/ link.
+        self.assertContains(response, 'href="/resume/"', count=3)
 
 
 class FooterTests(TestCase):

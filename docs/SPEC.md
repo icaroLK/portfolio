@@ -38,7 +38,7 @@ The "endpoints" are the URL routes in section 6. All are `GET` pages except the 
 | Interactivity | Native HTML (`<details>`), small vanilla JS for the mobile menu; htmx optional later for filters | Almost no JS to maintain |
 | Database | SQLite | One editor, low traffic, trivial backups |
 | Media | Local `media/` folder on the VPS | Free; backed up with the DB |
-| Admin ordering | `django-admin-sortable2` | Drag-and-drop order |
+| Admin look and ordering | `django-unfold` | Modern admin theme with built-in drag-and-drop order |
 | Images | `Pillow` + generated WebP thumbnails | Fast pages |
 | Email | Resend or Brevo via SMTP (free tier) | Contact notifications |
 | Spam | Honeypot + rate limit; Cloudflare Turnstile if needed | Clean inbox |
@@ -52,7 +52,7 @@ Three public pages (Home, Project detail, About), plus shared header and footer,
 ### Shared: header
 
 - Name on the left links to Home.
-- Desktop nav: Projects (Home), About, Contact (About page `#contact`), Resume (outlined pill, downloads the PDF from Site settings).
+- Desktop nav: Projects (Home), About, Contact (About page `#contact`), Resume (outlined pill, links to `/resume/`).
 - Active page link is darker.
 - Mobile (under 768 px): links collapse into a menu button with `aria-label="Open menu"`; tapping opens a full-width panel with the same links. Small vanilla JS toggle; Escape closes it.
 
@@ -220,7 +220,7 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 - **Contact inbox:** date, name, email, topic, read, spam; newest first; unread count visible; bulk "Mark as read" and "Mark as spam"; messages read-only.
 - **Uploads:** images max 5 MB (jpg, png, webp), resume PDF max 5 MB; anything else rejected with a clear message.
 - **Branding:** site name in the admin header instead of "Django administration".
-- **Look and layout (Sprint 6):** a modern admin theme (for example `django-unfold`), related fields side by side, rarely used sections (SEO, links) collapsed, clear labels and help text.
+- **Look and layout (Sprint 6):** `django-unfold` theme, sidebar grouped by page (Site, Projects, About page, Contact with an unread badge), related fields side by side, rarely used sections (SEO, links) collapsed, clear labels and help text. List ordering: drag rows by the handle, then click Save.
 
 ## 6. URL routes
 
@@ -234,7 +234,7 @@ Eight public GET routes, one form POST and the private admin. Every page route r
 | POST | `/contact/` | `contact_submit` | Save + redirect to `/about/?sent=1#contact`; errors re-render About |
 | GET | `/resume/` | `resume_download` | Redirect to the current resume PDF |
 | GET | `/sitemap.xml` | Django sitemaps | Home, About, published projects |
-| GET | `/robots.txt` | template view | Allow all, sitemap link, block admin path |
+| GET | `/robots.txt` | `robots_txt` | Allow all, sitemap link. The admin path is not listed (robots.txt is public); admin pages send `X-Robots-Tag: noindex` instead |
 | GET | `/healthz/` | `healthz` | "ok" for uptime checks |
 | GET | `/media/...`, `/static/...` | Caddy / WhiteNoise | Uploads, CSS, JS |
 | GET/POST | `/<ADMIN_PATH>/` | Django admin | Private CMS, rate-limited login |
@@ -248,7 +248,7 @@ These are acceptance criteria for every sprint.
 **Performance**
 
 - Lighthouse mobile Performance 90+ on Home and a project page.
-- Resized WebP thumbnails (card 640 px, featured 1200 px, gallery 1600 px), `loading="lazy"` below the fold, explicit width/height.
+- Resized WebP thumbnails (logo 160 px, photo 400 px, card 640 px, featured 1200 px, gallery 1600 px), made on first view in `media/thumbs/`; share images as a 1200 px JPEG. `loading="lazy"` below the fold, explicit width/height.
 - `select_related` / `prefetch_related`: no query per card.
 - Inter and Inter Tight, weights 400/500/600 only, `display=swap`.
 

@@ -1,8 +1,24 @@
+import datetime
+
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import SimpleTestCase, TestCase
 
-from portfolio.models import Project, Service, SiteSettings
+from portfolio.models import (
+    Education,
+    Experience,
+    Project,
+    ProjectFeature,
+    ProjectImage,
+    ProjectTech,
+    Service,
+    SiteSettings,
+    Skill,
+    SkillGroup,
+    Tech,
+    TypeTag,
+    date_range,
+)
 from portfolio.validators import (
     RandomFilename,
     validate_file_size,
@@ -83,3 +99,43 @@ class ValidatorTests(SimpleTestCase):
     def test_random_filename_keeps_lowercase_extension(self):
         path = RandomFilename("logos")(None, "My Logo.PNG")
         self.assertRegex(path, r"^logos/[0-9a-f]{32}\.png$")
+
+
+class ModelLabelTests(TempMediaMixin, TestCase):
+    """The names shown for each row in admin lists and dropdowns."""
+
+    def test_str_of_every_model(self):
+        project = Project.objects.create(title="ParkEye", pitch="p", what_it_does="w", cover_image=make_png())
+        tech = Tech.objects.create(name="Django", slug="django")
+        group = SkillGroup.objects.create(name="Backend")
+        start = datetime.date(2025, 3, 1)
+        cases = [
+            (SiteSettings.load(), "Site settings"),
+            (TypeTag.objects.create(name="Bot", slug="bot"), "Bot"),
+            (tech, "Django"),
+            (project, "ParkEye"),
+            (ProjectFeature.objects.create(project=project, text="Counts cars"), "Counts cars"),
+            (ProjectTech.objects.create(project=project, tech=tech, purpose="web"), "Django (web)"),
+            (ProjectImage.objects.create(project=project, image=make_png(), caption="Lot"), "Lot"),
+            (Experience.objects.create(role="Dev", company="Acme", start_date=start, summary="s"),
+             "Dev at Acme"),
+            (Education.objects.create(degree="BSc", school="UTFPR", start_date=start), "BSc, UTFPR"),
+            (group, "Backend"),
+            (Skill.objects.create(group=group, name="SQL"), "SQL"),
+            (Service.objects.create(title="Websites", description="d"), "Websites"),
+        ]
+        for obj, label in cases:
+            with self.subTest(model=type(obj).__name__):
+                self.assertEqual(str(obj), label)
+
+    def test_gallery_image_without_caption_has_a_label(self):
+        project = Project.objects.create(title="P", pitch="p", what_it_does="w", cover_image=make_png())
+        image = ProjectImage.objects.create(project=project, image=make_png())
+        self.assertEqual(str(image), f"Image {image.pk}")
+
+
+class DateRangeTests(SimpleTestCase):
+    def test_open_and_closed_ranges(self):
+        start = datetime.date(2025, 3, 1)
+        self.assertEqual(date_range(start, None), "Mar 2025 – Present")
+        self.assertEqual(date_range(start, datetime.date(2026, 1, 31)), "Mar 2025 – Jan 2026")

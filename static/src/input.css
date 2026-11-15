@@ -73,11 +73,18 @@
     }
   }
 
-  /* One clear focus ring for every link, button and input when using the keyboard. */
+  /*
+    One clear focus ring for every link, button and input when using the keyboard.
+    The outline follows each element's own rounded corners.
+  */
   :focus-visible {
     outline: 2px solid var(--color-ink);
     outline-offset: 3px;
-    border-radius: 4px;
+  }
+
+  /* On the dark gallery viewer a dark ring would be invisible. */
+  [data-lightbox] :focus-visible {
+    outline-color: #fff;
   }
 }
 

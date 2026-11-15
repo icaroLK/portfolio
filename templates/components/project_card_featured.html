@@ -4,11 +4,17 @@
   Desktop (1024 px+): cover left, text right. Smaller screens: cover on top.
   Needs project.type_tags and project.stack prefetched (Project.objects.for_cards()).
 {% endcomment %}
+{% load images %}
 <a href="{{ project.get_absolute_url }}"
    class="card-lg flex flex-col overflow-hidden p-2 text-ink lg:grid lg:grid-cols-2 lg:p-0">
   <div class="lg:p-3">
     <div class="h-[200px] overflow-hidden rounded-img bg-placeholder lg:h-full lg:min-h-80">
-      <img src="{{ project.cover_image.url }}" alt="{{ project.title }}" class="size-full object-cover">
+      {% thumbnail project.cover_image "card" as small %}{% thumbnail project.cover_image "featured" as large %}
+      {# srcset lets phones take the 640 px copy and big screens the 1200 px one. #}
+      <img src="{{ large.url }}"
+           {% if small.width and large.width %}srcset="{{ small.url }} {{ small.width }}w, {{ large.url }} {{ large.width }}w" sizes="(min-width: 1024px) 556px, calc(100vw - 56px)"{% endif %}
+           {{ large.size_attrs }} alt="{{ project.title }}"
+           {% if not forloop.first %}loading="lazy" {% endif %}decoding="async" class="size-full object-cover">
     </div>
   </div>
   <div class="flex flex-col justify-center gap-2.5 px-3 pt-[18px] pb-3 lg:gap-4 lg:px-11 lg:py-10">

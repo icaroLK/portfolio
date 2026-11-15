@@ -1,10 +1,11 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 
 from .models import ContactMessage
 
 
 @admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
+class ContactMessageAdmin(ModelAdmin):
     """Inbox: messages can be read, marked and deleted, but never edited."""
 
     list_display = ["created_at", "name", "email", "topic", "is_read", "is_spam", "email_sent"]

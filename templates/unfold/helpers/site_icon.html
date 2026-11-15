@@ -1,0 +1,14 @@
+{% comment %}
+  Top of the admin sidebar. Overrides Unfold's version so the whole block (icon and
+  name) is one link to the admin home, highlighted while you are on it.
+{% endcomment %}
+{% url "admin:index" as home_url %}
+<a href="{{ home_url }}" class="flex gap-3 grow items-center min-w-0 -mx-3 px-3 py-2 rounded-default hover:bg-base-100 dark:hover:bg-white/[.06]{% if request.path == home_url %} bg-base-100 dark:bg-white/[.06]{% endif %}"{% if request.path == home_url %} aria-current="page"{% endif %}>
+  <span class="bg-primary-600 flex h-[38px] items-center justify-center rounded-default shrink-0 text-white w-[38px]">
+    <span class="material-symbols-outlined md-18" aria-hidden="true">home</span>
+  </span>
+  <span class="flex flex-col grow justify-center min-w-0">
+    <span class="text-important tracking-tight truncate">{{ site_header }}</span>
+    <span class="font-normal text-subtle text-xs truncate">Admin home</span>
+  </span>
+</a>

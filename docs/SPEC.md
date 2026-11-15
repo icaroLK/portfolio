@@ -37,12 +37,13 @@ The "endpoints" are the URL routes in section 6. All are `GET` pages except the 
 | Styling | Tailwind CSS standalone CLI (no Node) | Matches the V2 design quickly |
 | Interactivity | Native HTML (`<details>`), small vanilla JS for the mobile menu; htmx optional later for filters | Almost no JS to maintain |
 | Database | SQLite | One editor, low traffic, trivial backups |
-| Media | Local `media/` folder on the VPS | Free; backed up with the DB |
+| Media | Local `media/` folder on the server | Free; backed up with the DB |
 | Admin look and ordering | `django-unfold` | Modern admin theme with built-in drag-and-drop order |
 | Images | `Pillow` + generated WebP thumbnails | Fast pages |
 | Email | Resend or Brevo via SMTP (free tier) | Contact notifications |
 | Spam | Honeypot + rate limit; Cloudflare Turnstile if needed | Clean inbox |
-| Serving | Gunicorn + Caddy on an Oracle Cloud VPS, Docker Compose | Automatic HTTPS, subdomains later |
+| Hosting | Free Google Cloud e2-micro VM (us-east1, IPv6 only, no paid IPv4), public through Cloudflare Tunnel. Details in `docs/INFRA.md` | R$0 forever, HTTPS by Cloudflare, no open ports |
+| Serving | Gunicorn + Caddy (plain HTTP, serves media) in Docker Compose on that VM | Small, simple, same setup on any server later |
 | Static files | WhiteNoise | Simple static serving |
 
 ## 3. Pages and features
@@ -260,7 +261,7 @@ These are acceptance criteria for every sprint.
 **Security**
 
 - `DEBUG=False` in production; secrets only in env vars.
-- HTTPS (Caddy), HSTS, secure + HttpOnly cookies, CSRF on the form.
+- HTTPS (Cloudflare, through the tunnel), HSTS, secure + HttpOnly cookies, CSRF on the form.
 - Admin on secret path with rate-limited login.
 - Uploads restricted by type and size; randomized filenames.
 
@@ -276,7 +277,7 @@ These are acceptance criteria for every sprint.
 
 **Operations**
 
-- Daily backup of `db.sqlite3` and `media/` (cron + tarball, keep 14 days, copy off the VPS).
+- Daily backup of `db.sqlite3` and `media/` (cron + tarball, keep 14 days, copy off the server).
 - Errors logged to a file; optional Sentry later.
 - Tests for models, views (status codes, published filtering) and the contact form (valid, invalid, honeypot, rate limit).
 

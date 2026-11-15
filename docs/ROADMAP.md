@@ -13,7 +13,7 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | 4 | Project detail page | Done |
 | 5 | About page and contact form | Done |
 | 6 | SEO, performance and polish | Done |
-| 7 | Deploy and go live | Not started |
+| 7 | Deploy and go live | Server ready, deploy not started |
 
 ---
 
@@ -157,15 +157,27 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 
 **Goal in plain words:** put the site online at icarokucha.com, safely, with backups.
 
-**Prerequisites (Ícaro):** Oracle VPS running with Docker; DNS `A` records for `icarokucha.com` and `www` pointing to the VPS IP; email provider account with a verified sender.
+**Hosting change (2026-11-15):** the Oracle VPS was replaced by a free Google Cloud e2-micro behind Cloudflare Tunnel, because Oracle approval would take months. Everything that was set up is in `docs/INFRA.md`.
+
+**Prerequisites (Ícaro):**
+
+- [x] Google Cloud VM `portfolio-vm` running Ubuntu 26.04 with Docker (images through `mirror.gcr.io`)
+- [x] Cloudflare Tunnel `portfolio-vm` Healthy; `icarokucha.com` routed to `localhost:8000` (nginx test page for now)
+- [ ] Same tunnel route for `www.icarokucha.com`
+- [ ] Billing > Reports shows R$0 net cost after a full day
+- [ ] Email provider account (Resend or Brevo) with a verified sender
 
 **Build:**
 
-- `Dockerfile` and `docker-compose.yml` (web with Gunicorn, Caddy).
-- Production settings; Caddyfile with HTTPS and `www` → apex redirect.
+- `Dockerfile` and `docker-compose.yml`: web with Gunicorn, Caddy on `localhost:8000` (plain HTTP, serves `/media/`, proxies the rest). No certificates on the server: Cloudflare does HTTPS.
+- Containers reach the internet over IPv6 (Docker IPv6 or host networking), and base images come through `mirror.gcr.io`.
+- Production settings for Cloudflare: trust `X-Forwarded-Proto`, read the visitor IP from `CF-Connecting-IP` (contact rate limit and admin lockout), `www` → apex redirect. Update the code comments that still describe Caddy as the HTTPS front.
 - Volumes for database and media; `collectstatic`.
 - Admin login rate limiting with `django-axes`.
-- Daily backup script, 14-day retention.
+- Deploy from Ícaro's PC with one command (GitHub has no IPv6, so the server cannot `git pull`).
+- Check that the email provider's SMTP or API is reachable over IPv6; pick the one that is.
+- Daily backup script, 14-day retention, copied off the server.
+- Remove the `test-page` nginx container.
 - `DEPLOY.md` with step-by-step deploy and update instructions.
 
 **You validate:**
@@ -177,3 +189,4 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - [ ] Restarting the containers keeps all content and images
 - [ ] A backup file appears after the cron runs, and restoring it locally works
 - [ ] Real content replaces the seed data: photo, bio, resume, experience, real projects
+- [ ] Google Cloud Billing > Reports still shows R$0 net cost with the real site running

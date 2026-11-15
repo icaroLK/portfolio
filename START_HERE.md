@@ -10,6 +10,7 @@ This folder is the starting point for icarokucha.com. You don't need to read eve
 | `docs/SPEC.md` | Full description of the site: pages, features, database models, admin, URLs, requirements, design colors | Claude Code, and you when you want details |
 | `docs/ROADMAP.md` | The 8 sprints, each with what gets built and a checklist for you to validate | You and Claude Code |
 | `docs/design/` | The Version 2 wireframes as HTML files. Double-click to open them in your browser | Both, to compare the real site with the design |
+| `docs/INFRA.md` | Where the live site runs: Google Cloud server, Cloudflare Tunnel and domain, and why | You, when you need to touch the server |
 | `.gitignore` | Keeps secrets, the database and uploads out of GitHub | Git |
 
 ## Setup (once)
@@ -54,4 +55,4 @@ This folder is the starting point for icarokucha.com. You don't need to read eve
 - If you don't understand something, ask "explain that like I'm new to Django". It's supposed to.
 - If you change your mind about a feature, ask Claude Code to update `docs/SPEC.md` first, then build.
 - Keep real content (photos, bio, project write-ups) for Sprint 7; the demo data is enough until then.
-- Before Sprint 7 you need: the Oracle VPS running, DNS pointing `icarokucha.com` to it, and an email provider account (Resend or Brevo).
+- Before Sprint 7 you need: the Google Cloud server and Cloudflare Tunnel from `docs/INFRA.md` (already done), and an email provider account (Resend or Brevo).

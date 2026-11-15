@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Instructions for Claude Code in this repository. Read this file, `docs/SPEC.md` and `docs/ROADMAP.md` at the start of every session.
+Instructions for Claude Code in this repository. Read this file, `docs/SPEC.md` and `docs/ROADMAP.md` at the start of every session. For anything about the live server, also read `docs/INFRA.md`.
 
 ## What we are building
 

@@ -1,0 +1,4 @@
+{# Month and year dropdowns side by side (inline styles: the admin CSS is Unfold's, not ours). #}
+<div style="display:flex;gap:8px;max-width:22rem">
+  {% for widget in widget.subwidgets %}<div style="flex:1;min-width:0">{% include widget.template_name %}</div>{% endfor %}
+</div>

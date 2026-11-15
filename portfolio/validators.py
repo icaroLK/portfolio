@@ -1,5 +1,5 @@
 """
-Upload rules shared by every image and file field.
+Field rules: uploads (images, resume) and time zone names.
 
 Images: jpg, png or webp, max 5 MB. Resume: pdf, max 5 MB.
 Uploaded files also get a random name, so nobody can guess or overwrite them.
@@ -7,6 +7,7 @@ Uploaded files also get a random name, so nobody can guess or overwrite them.
 
 from pathlib import Path
 from uuid import uuid4
+from zoneinfo import available_timezones
 
 from django.core.exceptions import ValidationError
 from django.core.validators import FileExtensionValidator
@@ -54,3 +55,9 @@ class RandomFilename:
 
     def __eq__(self, other):
         return isinstance(other, RandomFilename) and self.folder == other.folder
+
+
+def validate_time_zone(value):
+    """Accept only real time zone names like "America/Sao_Paulo"."""
+    if value and value not in available_timezones():
+        raise ValidationError(f'"{value}" is not a time zone name, e.g. "America/Sao_Paulo".')

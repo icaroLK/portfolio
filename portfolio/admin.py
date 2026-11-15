@@ -1,4 +1,7 @@
+from zoneinfo import available_timezones
+
 from django.contrib import admin
+from django.db import models
 from django.contrib.auth.admin import GroupAdmin as BaseGroupAdmin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.contrib.auth.models import Group, User
@@ -7,11 +10,12 @@ from django.urls import reverse
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from unfold.forms import AdminPasswordChangeForm, UserChangeForm, UserCreationForm
-from unfold.widgets import UnfoldAdminCheckboxSelectMultipleWidget
+from unfold.widgets import UnfoldAdminCheckboxSelectMultipleWidget, UnfoldAdminSelect2Widget
 
 from .models import (
     Education,
     Experience,
+    Language,
     Project,
     ProjectFeature,
     ProjectImage,
@@ -23,6 +27,7 @@ from .models import (
     Tech,
     TypeTag,
 )
+from .widgets import MarkdownTextarea, MonthYearWidget
 
 # In "fields" and "fieldsets", a tuple puts its fields side by side on one row.
 # "collapse" folds a section that is rarely edited.
@@ -37,6 +42,26 @@ def image_preview(image_field, height=120):
         image_field.url,
         height,
     )
+
+
+class MarkdownFieldsMixin:
+    """Gives the text boxes listed in `markdown_fields` the formatting toolbar."""
+
+    markdown_fields = []
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if db_field.name in self.markdown_fields:
+            kwargs["widget"] = MarkdownTextarea
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
+
+
+class MonthYearDatesMixin:
+    """Every date on the page is picked as month + year (no day, no calendar)."""
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        if isinstance(db_field, models.DateField):
+            kwargs["widget"] = MonthYearWidget
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
 
 class SortableAdmin(ModelAdmin):
@@ -54,10 +79,18 @@ class SortableInline(TabularInline):
     extra = 1
 
 
+class LanguageInline(SortableInline):
+    model = Language
+    fields = ["name", "level", "order"]
+    verbose_name_plural = "Languages (About page)"
+
+
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(ModelAdmin):
+class SiteSettingsAdmin(MarkdownFieldsMixin, ModelAdmin):
     """One edit page, no Add or Delete. The list page jumps straight to it."""
 
+    markdown_fields = ["about_bio"]
+    inlines = [LanguageInline]
     readonly_fields = ["profile_photo_preview", "og_image_preview"]
     fieldsets = [
         ("Hero", {"fields": [
@@ -71,6 +104,13 @@ class SiteSettingsAdmin(ModelAdmin):
         ("Links & resume", {"fields": [
             "resume_pdf", ("email", "location_line"), ("github_url", "linkedin_url"),
         ]}),
+        ("Quick facts (About page)", {
+            "description": (
+                "Shown next to your photo with small icons. Email, GitHub and LinkedIn "
+                "come from Links & resume. Languages are at the bottom of this page."
+            ),
+            "fields": [("about_location", "time_zone")],
+        }),
         ("Contact form", {"fields": ["notification_email"]}),
         ("Section toggles", {
             "description": "Show or hide sections of the About page.",
@@ -85,6 +125,15 @@ class SiteSettingsAdmin(ModelAdmin):
             "fields": ["meta_description", ("og_image", "og_image_preview")],
         }),
     ]
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        # A searchable dropdown of real zone names (type "Sao"), so a typo can never break the clock.
+        if db_field.name == "time_zone":
+            zones = sorted(available_timezones())
+            kwargs["widget"] = UnfoldAdminSelect2Widget(
+                choices=[("", "No clock")] + [(zone, zone) for zone in zones]
+            )
+        return super().formfield_for_dbfield(db_field, request, **kwargs)
 
     @admin.display(description="Current photo")
     def profile_photo_preview(self, obj):
@@ -150,10 +199,11 @@ class ProjectImageInline(SortableInline):
 
 
 @admin.register(Project)
-class ProjectAdmin(SortableAdmin):
+class ProjectAdmin(MarkdownFieldsMixin, SortableAdmin):
     list_display = ["thumbnail", "title", "tag_list", "is_featured", "is_published"]
     list_display_links = ["title"]
     list_editable = ["is_featured", "is_published"]
+    markdown_fields = ["what_it_does", "how_it_works"]
     list_filter = ["type_tags", "is_featured", "is_published"]
     search_fields = ["title"]
 
@@ -207,20 +257,25 @@ class ProjectAdmin(SortableAdmin):
 
 
 @admin.register(Experience)
-class ExperienceAdmin(SortableAdmin):
-    list_display = ["logo_thumbnail", "role", "company", "start_date", "end_date", "is_published"]
+class ExperienceAdmin(MonthYearDatesMixin, MarkdownFieldsMixin, SortableAdmin):
+    markdown_fields = ["details"]
+    radio_fields = {"work_mode": admin.HORIZONTAL}
+    list_display = [
+        "logo_thumbnail", "role", "company", "work_mode", "start_date", "end_date", "is_published",
+    ]
     list_display_links = ["role"]
     list_editable = ["is_published"]
-    list_filter = ["is_published"]
+    list_filter = ["work_mode", "is_published"]
     search_fields = ["role", "company"]
     autocomplete_fields = ["techs"]
     readonly_fields = ["logo_preview"]
     fieldsets = [
         ("Job", {"fields": [
             ("role", "company"),
-            ("location", "is_published"),
+            ("location", "work_mode"),
             ("start_date", "end_date"),
             ("logo", "logo_preview"),
+            "is_published",
         ]}),
         ("Text", {"fields": ["summary", "details"]}),
         ("Tech chips", {"fields": ["techs"]}),
@@ -236,7 +291,7 @@ class ExperienceAdmin(SortableAdmin):
 
 
 @admin.register(Education)
-class EducationAdmin(SortableAdmin):
+class EducationAdmin(MonthYearDatesMixin, SortableAdmin):
     list_display = ["logo_thumbnail", "degree", "school", "start_date", "end_date", "is_published"]
     list_display_links = ["degree"]
     list_editable = ["is_published"]
@@ -278,7 +333,8 @@ class SkillGroupAdmin(SortableAdmin):
 
 
 @admin.register(Service)
-class ServiceAdmin(SortableAdmin):
+class ServiceAdmin(MarkdownFieldsMixin, SortableAdmin):
+    markdown_fields = ["description"]
     list_display = ["title", "description", "is_published"]
     list_editable = ["is_published"]
     fields = ["title", "description", "is_published"]

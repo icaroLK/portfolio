@@ -133,7 +133,7 @@ class AboutPageTests(AboutTestData):
         self.assertContains(self.client.get(ABOUT + "?sent=1"), "your message was sent")
 
     def test_fixed_number_of_queries(self):
-        # Settings, experiences, their techs, education, skill groups, skills, services.
+        # Settings, languages, experiences, their techs, education, skill groups, skills, services.
         # Adding more rows must not add queries.
         self.client.get(ABOUT)  # warm up
         with CaptureQueriesContext(connection) as before:

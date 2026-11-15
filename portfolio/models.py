@@ -5,14 +5,29 @@ Every list model has an `order` field (drag-and-drop in the admin) and,
 where it makes sense, `is_published` (hidden from the site when off).
 """
 
+from urllib.parse import urlparse
+from zoneinfo import ZoneInfo
+
 from django.db import models
 from django.db.models import Q
 from django.urls import reverse
-from django.utils import dateformat
+from django.utils import dateformat, timezone
 from django.utils.text import slugify
 
 from .embeds import embed_url, validate_video_url
-from .validators import IMAGE_VALIDATORS, PDF_VALIDATORS, RandomFilename
+from .validators import IMAGE_VALIDATORS, PDF_VALIDATORS, RandomFilename, validate_time_zone
+
+# Shown under every text box that understands Markdown (the admin adds a toolbar too).
+MARKDOWN_HELP = (
+    "Formatting: **bold**, *italic*, ## Title, · or - at the start of a line for a list, "
+    "[text](https://link). Every Enter is a new line."
+)
+
+
+def url_handle(url, keep=1):
+    """Last part(s) of a profile link: github.com/icaroLK -> "icaroLK"."""
+    parts = [part for part in urlparse(url).path.split("/") if part]
+    return "/".join(parts[-keep:]) if parts else urlparse(url).netloc
 
 
 # --- Shared building blocks ---
@@ -95,7 +110,7 @@ class SiteSettings(TimeStampedModel):
     about_heading = models.CharField(
         max_length=80, blank=True, help_text='About page title, e.g. "Hi, I\'m Icaro."'
     )
-    about_bio = models.TextField(blank=True)
+    about_bio = models.TextField(blank=True, help_text=MARKDOWN_HELP)
     profile_photo = models.ImageField(
         upload_to=RandomFilename("site"), blank=True, validators=IMAGE_VALIDATORS
     )
@@ -122,7 +137,20 @@ class SiteSettings(TimeStampedModel):
     email = models.EmailField(blank=True)
     github_url = models.URLField(blank=True)
     linkedin_url = models.URLField(blank=True)
-    location_line = models.CharField(max_length=120, blank=True)
+    location_line = models.CharField(
+        "Footer location", max_length=120, blank=True,
+        help_text='Shown in the footer, e.g. "Curitiba, Brazil · Working remotely".',
+    )
+
+    # Quick facts on the About page (email, GitHub and LinkedIn come from the links above)
+    about_location = models.CharField(
+        "Location", max_length=120, blank=True,
+        help_text='Shown on the About page, e.g. "Curitiba, Brazil". Empty hides it.',
+    )
+    time_zone = models.CharField(
+        max_length=64, blank=True, validators=[validate_time_zone],
+        help_text="Shows your current local time and UTC offset. Empty hides the clock.",
+    )
 
     # SEO
     meta_description = models.CharField(max_length=160, blank=True)
@@ -161,6 +189,55 @@ class SiteSettings(TimeStampedModel):
         """Return the single settings row, creating an empty one if needed."""
         settings, _ = cls.objects.get_or_create(pk=1)
         return settings
+
+    @property
+    def github_handle(self):
+        return url_handle(self.github_url) if self.github_url else ""
+
+    @property
+    def linkedin_handle(self):
+        """LinkedIn links look like linkedin.com/in/<name>, shown as "in/<name>"."""
+        return url_handle(self.linkedin_url, keep=2) if self.linkedin_url else ""
+
+    @property
+    def local_time(self):
+        """Current time in the owner's time zone, or None when no zone is set."""
+        if not self.time_zone:
+            return None
+        return timezone.now().astimezone(ZoneInfo(self.time_zone))
+
+    @property
+    def local_time_label(self):
+        """Like "18:15". Formatted here because template date filters would convert
+        it back to the server's time zone."""
+        now = self.local_time
+        return now.strftime("%H:%M") if now else ""
+
+    @property
+    def utc_offset_label(self):
+        """Like "UTC-03:00", matching the GitHub profile style."""
+        now = self.local_time
+        if now is None:
+            return ""
+        offset = now.strftime("%z")  # "-0300"
+        return f"UTC{offset[:3]}:{offset[3:]}"
+
+
+class Language(TimeStampedModel):
+    """A language row in Site settings, shown on the About page with its level."""
+
+    site = models.ForeignKey(SiteSettings, on_delete=models.CASCADE, related_name="languages")
+    name = models.CharField(max_length=60)
+    level = models.CharField(
+        max_length=30, blank=True, help_text='Free text, e.g. "Native", "C1" or "Fluent".'
+    )
+    order = models.PositiveIntegerField(default=0, db_index=True)
+
+    class Meta:
+        ordering = ["order"]
+
+    def __str__(self):
+        return f"{self.name} ({self.level})" if self.level else self.name
 
 
 # --- Tags and technologies ---
@@ -229,8 +306,10 @@ class Project(TimeStampedModel):
     repo_url = models.URLField("GitHub repo link", blank=True, help_text="Empty hides the button.")
 
     # Content
-    what_it_does = models.TextField(help_text="Plain language, for non-technical readers.")
-    how_it_works = models.TextField(blank=True, help_text="Technical. Simple Markdown.")
+    what_it_does = models.TextField(
+        help_text="Plain language, for non-technical readers. " + MARKDOWN_HELP
+    )
+    how_it_works = models.TextField(blank=True, help_text="Technical. " + MARKDOWN_HELP)
     architecture_image = models.ImageField(
         upload_to=RandomFilename("projects"),
         blank=True,
@@ -338,20 +417,31 @@ class ProjectImage(TimeStampedModel):
 
 
 class Experience(TimeStampedModel):
+    class WorkMode(models.TextChoices):
+        ONSITE = "onsite", "On-site"
+        HYBRID = "hybrid", "Hybrid"
+        REMOTE = "remote", "Remote"
+
     role = models.CharField(max_length=120)
     company = models.CharField(max_length=120)
-    location = models.CharField(max_length=120, blank=True, help_text='e.g. "Remote (US)"')
+    location = models.CharField(
+        max_length=120, blank=True, help_text='The place, e.g. "Curitiba, Brazil" or "United States".'
+    )
+    work_mode = models.CharField(
+        max_length=10, choices=WorkMode.choices, blank=True,
+        help_text="Badge next to the job title. None hides it.",
+    )
     logo = models.ImageField(
         upload_to=RandomFilename("logos"),
         blank=True,
         validators=IMAGE_VALIDATORS,
         help_text="Square works best. Empty shows the first letter of the company.",
     )
-    start_date = models.DateField(help_text="Only the month and year are shown.")
-    end_date = models.DateField(null=True, blank=True, help_text="Empty means Present.")
+    start_date = models.DateField()
+    end_date = models.DateField(null=True, blank=True, help_text="Leave empty for Present.")
     summary = models.CharField(max_length=300, help_text="One or two lines, always visible.")
     details = models.TextField(
-        blank=True, help_text='Simple Markdown. "Show details" appears only when filled.'
+        blank=True, help_text='"Show details" appears only when filled. ' + MARKDOWN_HELP
     )
     techs = models.ManyToManyField(
         Tech, related_name="experiences", blank=True, help_text="Shown as chips on the card."
@@ -429,7 +519,8 @@ class Skill(TimeStampedModel):
 
 class Service(TimeStampedModel):
     title = models.CharField(max_length=120)
-    description = models.CharField(max_length=200)
+    # A text box (not a one-line input) so formatting fits; still capped at 200 characters.
+    description = models.TextField(max_length=200, help_text=MARKDOWN_HELP)
     is_published = models.BooleanField(default=True)
     order = models.PositiveIntegerField(default=0, db_index=True)
 

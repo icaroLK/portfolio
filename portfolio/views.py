@@ -61,6 +61,7 @@ def render_about(request, form, status=200):
         "education": Education.objects.published() if site.show_education else [],
         "skill_groups": SkillGroup.objects.for_about() if site.show_skills else [],
         "services": Service.objects.published() if site.show_services else [],
+        "languages": site.languages.all(),
     }
     return render(request, "portfolio/about.html", context, status=status)
 

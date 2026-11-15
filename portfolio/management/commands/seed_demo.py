@@ -18,6 +18,7 @@ from PIL import Image, ImageDraw, ImageFont
 from portfolio.models import (
     Education,
     Experience,
+    Language,
     Project,
     ProjectFeature,
     ProjectImage,
@@ -52,10 +53,14 @@ SITE_SETTINGS = {
     "github_url": "https://github.com/",
     "linkedin_url": "https://www.linkedin.com/",
     "location_line": "Curitiba, Brazil · Working remotely",
+    "about_location": "Curitiba, Brazil",
+    "time_zone": "America/Sao_Paulo",
     "meta_description": (
         "Icaro Kucha builds websites, WhatsApp bots and automations with Python and Django."
     ),
 }
+
+LANGUAGES = [("Portuguese", "Native"), ("English", "C1")]
 
 TYPE_TAGS = ["Website", "System", "Bot", "Automation", "Computer Vision"]
 
@@ -186,7 +191,8 @@ EXPERIENCES = [
     {
         "role": "Placeholder role",
         "company": "RADZ Group",
-        "location": "Remote (US)",
+        "location": "United States",
+        "work_mode": "remote",
         "start_date": date(2025, 3, 1),
         "end_date": date(2026, 6, 1),
         "summary": "Placeholder summary: one or two lines, always visible.",
@@ -202,6 +208,7 @@ EXPERIENCES = [
         "role": "Freelance developer",
         "company": "Freelance clients",
         "location": "Curitiba, Brazil",
+        "work_mode": "hybrid",
         "start_date": date(2024, 1, 1),
         "end_date": None,
         "summary": "Placeholder summary: one or two lines, always visible.",
@@ -289,6 +296,9 @@ class Command(BaseCommand):
         if not settings.og_image:
             settings.og_image = placeholder_image("Share image", size=(1200, 630))
         settings.save()
+        if not settings.languages.exists():
+            for order, (name, level) in enumerate(LANGUAGES):
+                Language.objects.create(site=settings, name=name, level=level, order=order)
 
     def seed_type_tags(self):
         tags = {}

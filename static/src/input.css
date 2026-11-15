@@ -139,7 +139,7 @@
 }
 
 /*
-  Text written as simple Markdown in the admin (How it works, Experience details).
+  Text written as simple Markdown in the admin (bio, project texts, experience details, services).
   Tailwind removes browser defaults, so paragraphs, lists and code get spacing back here.
 */
 @utility rich-text {
@@ -156,6 +156,13 @@
   }
   & li + li {
     margin-top: 0.35em;
+  }
+  /* Blank lines between list items in the admin keep a bigger gap on the page. */
+  & li:has(> p) + li {
+    margin-top: 0.75em;
+  }
+  & em {
+    font-style: italic;
   }
   & strong {
     font-weight: 600;
@@ -187,5 +194,9 @@
     font-family: var(--font-display);
     font-weight: 600;
     color: var(--color-ink);
+    letter-spacing: -0.01em;
+  }
+  & h3 {
+    font-size: 1.15em;
   }
 }

@@ -15,6 +15,8 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 | 6 | SEO, performance and polish | Done |
 | 7 | Deploy and go live | Built, first deploy pending |
 
+Changes after the sprints (fixes and small features) are listed at the end, under "After launch".
+
 ---
 
 ## Sprint 0: Project setup
@@ -191,3 +193,41 @@ Each sprint ends with something Ícaro can open and click. Do them in order. A s
 - [ ] A backup file appears after the cron runs, and restoring it locally works
 - [ ] Real content replaces the seed data: photo, bio, resume, experience, real projects
 - [ ] Google Cloud Billing > Reports still shows R$0 net cost with the real site running
+
+---
+
+## After launch: fixes and features
+
+Small changes made after the eight sprints. Same rules: plan first, tests pass, Ícaro validates by clicking.
+
+### About refresh: formatting, quick facts and languages
+
+**What changed:**
+
+- Longer texts understand simple Markdown (bold, italic, small titles, lists, links), with a formatting toolbar in the admin. Lists work with `·`, `•` or `-`; every Enter is a new line.
+- About intro: photo beside the title, top aligned (no longer floating in the middle). Quick facts with icons under the title: location, live local time with UTC offset, email, LinkedIn, GitHub. Languages list with levels.
+- Admin: "Quick facts (About page)" fieldset (location, time zone) and a Languages inline in Site settings.
+
+**You validate:**
+
+- [x] In the admin, select a word in About bio, click B, save: the word is bold on `/about/`
+- [x] Lines starting with `·` or `-` show as one indented list; long items wrap under the text, not under the dot
+- [x] Photo sits next to the title at the top, also with a long bio
+- [x] Location, clock (ticking, with UTC-03:00), email, LinkedIn and GitHub show with icons; emptying a field hides its line
+- [x] Languages show in admin order with their level; dragging them changes the order
+- [x] Looks right on a 390 px phone width
+
+### Experience work mode and month + year dates
+
+**What changed:**
+
+- Experience has a work mode: On-site, Hybrid or Remote (radio buttons in the admin, optional). It shows as a grey badge with an icon next to the job title. The experience list in the admin has a work mode column and filter.
+- Start and end dates in Experience and Education are picked as month + year dropdowns instead of a day calendar.
+
+**You validate:**
+
+- [x] Admin, an experience: dates are two dropdowns (month, year); typing "2024" in the year box jumps to it; saving keeps them
+- [x] Picking only a month (no year) shows an error instead of saving
+- [x] Pick On-site, Hybrid or Remote and save: the badge shows next to the job title on `/about/`; "None" hides it
+- [x] Education dates use the same dropdowns and the card still says "Feb 2023 – Jun 2027"
+- [x] On a 390 px phone the badge sits before the dates and nothing scrolls sideways

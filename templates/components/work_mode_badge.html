@@ -1,0 +1,8 @@
+{% comment %}
+  On-site / Hybrid / Remote pill with an icon, on Experience cards.
+  Usage: {% include "components/work_mode_badge.html" with experience=experience extra_class="md:hidden" %}
+{% endcomment %}
+<span class="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-line-strong bg-surface py-[3px] pr-2.5 pl-2 text-xs font-medium whitespace-nowrap text-body {{ extra_class }}">
+  {% include "components/icon.html" with name=experience.work_mode size="size-3.5" %}
+  <span><span class="sr-only">Work mode: </span>{{ experience.get_work_mode_display }}</span>
+</span>

@@ -94,8 +94,8 @@ Three public pages (Home, Project detail, About), plus shared header and footer,
 
 ### About (`/about/`)
 
-1. **Intro:** circular photo, "Hi, I'm Icaro." heading, bio, buttons "Download resume" and "Contact me".
-2. **Experience** (eyebrow "Work"): card per entry with logo, role, company + location, dates, summary, tech chips. A native `<details>` reveals the long description and bullets; the toggle appears only when `details` is filled.
+1. **Intro:** circular photo beside the heading (top aligned). Under the heading, quick facts with small line icons in one wrapping row: location, live local time with UTC offset ("18:15 (UTC-03:00)"), email, LinkedIn handle, GitHub handle. Below them a "Languages" list, one row per language with its level on the right. Then the bio at full width and the buttons "Download resume" and "Contact me". Every fact hides when its field is empty.
+2. **Experience** (eyebrow "Work"): card per entry with logo, role, work mode badge (On-site / Hybrid / Remote, grey pill with icon; next to the role on desktop, before the dates on mobile), company + location, dates, summary, tech chips. A native `<details>` reveals the long description and bullets; the toggle appears only when `details` is filled.
 3. **Education** (eyebrow "Studies"): two-column cards (logo, degree, school + city, dates).
 4. **Skills** (eyebrow "Toolbox"): one row per SkillGroup, name left, chips right (stacked on mobile).
 5. **What I can build for you** (eyebrow "Services"): numbered Service cards.
@@ -113,11 +113,12 @@ Each section can be hidden from Site settings (`show_experience`, `show_educatio
 ### Global
 
 - Custom 404 and 500 pages in the site style.
+- **Formatting:** the longer texts (About bio, project "What it does" and "How it works", experience details, service descriptions) use simple Markdown: `**bold**`, `*italic*`, `## Title` (shown as a small heading), lists starting with `·`, `•` or `-`, and links. Every Enter is a line break, spaces at the start of a line are ignored, output is cleaned with `nh3`.
 - Every page sets its own `<title>`, meta description and Open Graph tags (project pages use the cover image as `og:image`).
 
 ## 4. Data model
 
-Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). List models have `order` and, where useful, `is_published`. All models have `created_at` / `updated_at`.
+Fourteen models in two apps: `portfolio` (site content) and `contact` (inbox). List models have `order` and, where useful, `is_published`. All models have `created_at` / `updated_at`.
 
 ### portfolio app
 
@@ -130,15 +131,19 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 | subheadline | Char(300) | Under the H1 |
 | status_badge_text | Char(80) | "Open to work · Available for freelance" |
 | show_status_badge | Bool | |
-| about_bio | Text | About intro |
+| about_bio | Text | About intro (Markdown) |
 | profile_photo | Image | Circular photo |
 | resume_pdf | File (.pdf) | Header pill, About button, footer, `/resume/` |
 | email | Email | |
 | github_url, linkedin_url | URL | |
 | location_line | Char(120) | Footer |
+| about_location | Char(120) | About quick facts, "Curitiba, Brazil" |
+| time_zone | Char(64) | Real zone name ("America/Sao_Paulo"); drives the About clock |
 | meta_description | Char(160) | Default SEO description |
 | og_image | Image | Default share image |
 | show_experience, show_education, show_skills, show_services, show_contact_form | Bool | About section toggles |
+
+**Language** (inline in Site settings): site FK, name ("English"), level (free text: "Native", "C1"), order.
 
 **TypeTag:** name ("Computer Vision"), slug, order. Drives Home filters.
 
@@ -157,7 +162,7 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 | cover_image | Image | Required; thumbnails generated |
 | video_url | URL, optional | YouTube or Loom |
 | live_url, repo_url | URL, optional | Buttons hide when empty |
-| what_it_does | Text | Plain language |
+| what_it_does | Text | Plain language; simple Markdown |
 | how_it_works | Text, optional | Technical; simple Markdown |
 | architecture_image | Image, optional | Shown only if uploaded |
 | is_featured | Bool | |
@@ -177,7 +182,8 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 | --- | --- | --- |
 | role | Char(120) | |
 | company | Char(120) | |
-| location | Char(120) | "Remote (US)" |
+| location | Char(120) | The place: "Curitiba, Brazil", "United States" |
+| work_mode | Choice, optional | On-site / Hybrid / Remote; badge on the card, none hides it |
 | logo | Image, optional | Placeholder when empty |
 | start_date | Date | |
 | end_date | Date, optional | Empty = "Present"; display "Mar 2025 – Present" |
@@ -190,7 +196,7 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 
 **SkillGroup:** name ("Automation & AI"), order. **Skill** (inline in SkillGroup): group FK, name, order.
 
-**Service:** title, description Char(200), is_published, order. Display number (01, 02, 03) generated from order.
+**Service:** title, description Text (max 200, simple Markdown), is_published, order. Display number (01, 02, 03) generated from order.
 
 ### contact app
 
@@ -213,9 +219,11 @@ Thirteen models in two apps: `portfolio` (site content) and `contact` (inbox). L
 
 - **Private URL** from `ADMIN_PATH` in `.env` (for example `/painel-8x2k/`), never `/admin/`.
 - **Login security:** strong password and login rate limiting with `django-axes`: 5 wrong passwords lock that IP for 1 hour (no 2FA: one admin user).
-- **Site settings:** a single edit page, no Add or Delete. Fieldsets: Hero, About, Links & resume, SEO, Section toggles.
+- **Site settings:** a single edit page, no Add or Delete. Fieldsets: Hero, About, Links & resume, Quick facts (About page), Contact form, Section toggles, SEO. Languages are a sortable inline on the same page; the time zone is a searchable dropdown.
+- **Formatting toolbar:** every Markdown text box has a B / I / H / List / Link toolbar above it (Ctrl+B and Ctrl+I work too). The List button adds `· `.
 - **Projects list:** cover thumbnail, title, type tags, featured, published, order. `is_featured` and `is_published` editable in the list. Drag-and-drop ordering. Filters: type tag, featured, published. Search by title.
 - **Project edit page:** fieldsets Basics, Media, Content, Links, SEO. Sortable inlines for Key features, Stack, Gallery. Image previews. "View on site" button.
+- **Dates (Experience, Education):** picked as two dropdowns, month and year (no day, no calendar; type "2024" in the year box to jump). Saved as the 1st of the month. Work mode is three radio buttons.
 - **Experience, Education, Services, Skill groups:** drag-and-drop order, published toggle in the list. Skills inline in their group.
 - **Tags and Techs:** simple lists, slug auto-filled.
 - **Contact inbox:** date, name, email, topic, read, spam; newest first; unread count visible; bulk "Mark as read" and "Mark as spam"; messages read-only.

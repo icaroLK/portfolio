@@ -1,23 +1,70 @@
 {% extends "base.html" %}
-{% load images seo %}
+{% load images markdown_extras seo static %}
 
 {% block seo %}{% seo_tags title="About" %}{% endblock %}
+
+{% block extra_scripts %}
+  {% if site.time_zone %}<script src="{% static 'js/clock.js' %}" defer></script>{% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="mx-auto max-w-[920px] px-5 md:px-8">
 
-  {# --- Intro --- #}
-  <section class="flex flex-col gap-[18px] pt-11 pb-12 md:flex-row md:flex-wrap md:items-center md:gap-11 md:pt-[88px] md:pb-[72px]">
-    <div class="size-[104px] shrink-0 overflow-hidden rounded-full border-[5px] border-surface bg-placeholder shadow-[0_2px_10px_rgba(0,0,0,0.06)] md:size-[168px] md:border-[6px]">
-      {% if site.profile_photo %}
-        {% thumbnail site.profile_photo "avatar" as photo %}
-        <img src="{{ photo.url }}" {{ photo.size_attrs }} alt="{{ site.site_name }}" class="size-full object-cover">
+  {# --- Intro: photo beside the title, quick facts under it, bio full width below --- #}
+  <section class="pt-11 pb-12 md:pt-[88px] md:pb-[72px]">
+    <div class="grid grid-cols-[auto_1fr] items-center gap-x-4 gap-y-[18px] md:items-start md:gap-x-8 md:gap-y-3.5">
+      <div class="size-[88px] shrink-0 overflow-hidden rounded-full border-[5px] border-surface bg-placeholder shadow-[0_2px_10px_rgba(0,0,0,0.06)] md:row-span-2 md:size-[152px] md:border-[6px]">
+        {% if site.profile_photo %}
+          {% thumbnail site.profile_photo "avatar" as photo %}
+          <img src="{{ photo.url }}" {{ photo.size_attrs }} alt="{{ site.site_name }}" class="size-full object-cover">
+        {% endif %}
+      </div>
+      <h1 class="min-w-0 font-display text-[34px] leading-[1.05] font-semibold tracking-display md:pt-2 md:text-[52px]">{{ site.about_heading|default:site.site_name }}</h1>
+
+      {% if site.about_location or site.time_zone or site.email or site.linkedin_url or site.github_url or languages %}
+      <div class="col-span-2 flex flex-col gap-[18px] md:col-span-1 md:col-start-2 md:gap-3.5">
+        {% if site.about_location or site.time_zone or site.email or site.linkedin_url or site.github_url %}
+        <ul class="flex flex-wrap gap-x-5 text-sm text-body-soft" aria-label="Quick facts">
+          {% if site.about_location %}
+            <li class="flex min-h-11 items-center gap-2.5 md:min-h-9">{% include "components/icon.html" with name="pin" %}<span><span class="sr-only">Location: </span>{{ site.about_location }}</span></li>
+          {% endif %}
+          {% if site.time_zone %}
+            <li class="flex min-h-11 items-center gap-2.5 md:min-h-9">{% include "components/icon.html" with name="clock" %}
+              <span><span class="sr-only">Local time: </span><span class="tabular-nums" data-clock data-tz="{{ site.time_zone }}">{{ site.local_time_label }}</span> <span class="text-faint tabular-nums">({{ site.utc_offset_label }})</span></span>
+            </li>
+          {% endif %}
+          {% if site.email %}
+            <li class="flex min-h-11 items-center gap-2.5 md:min-h-9">{% include "components/icon.html" with name="mail" %}<a href="mailto:{{ site.email }}" class="inline-flex min-h-11 items-center hover:text-ink hover:underline hover:underline-offset-[3px] md:min-h-9"><span class="sr-only">Email: </span>{{ site.email }}</a></li>
+          {% endif %}
+          {% if site.linkedin_url %}
+            <li class="flex min-h-11 items-center gap-2.5 md:min-h-9">{% include "components/icon.html" with name="linkedin" %}<a href="{{ site.linkedin_url }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:text-ink hover:underline hover:underline-offset-[3px] md:min-h-9"><span class="sr-only">LinkedIn: </span>{{ site.linkedin_handle }}<span class="sr-only"> (opens in a new tab)</span></a></li>
+          {% endif %}
+          {% if site.github_url %}
+            <li class="flex min-h-11 items-center gap-2.5 md:min-h-9">{% include "components/icon.html" with name="github" %}<a href="{{ site.github_url }}" target="_blank" rel="noopener" class="inline-flex min-h-11 items-center hover:text-ink hover:underline hover:underline-offset-[3px] md:min-h-9"><span class="sr-only">GitHub: </span>{{ site.github_handle }}<span class="sr-only"> (opens in a new tab)</span></a></li>
+          {% endif %}
+        </ul>
+        {% endif %}
+
+        {% if languages %}
+        <div class="flex w-full flex-col gap-2.5 md:max-w-[280px] md:pt-1">
+          <h2 id="languages-heading" class="text-[11px] font-semibold tracking-eyebrow text-subtle uppercase">Languages</h2>
+          <ul class="flex flex-col gap-2 text-sm" aria-labelledby="languages-heading">
+            {% for language in languages %}
+            <li class="flex items-center justify-between gap-3">
+              <span>{{ language.name }}</span>
+              {% if language.level %}<span class="rounded-full border border-line bg-chip px-2.5 py-0.5 text-xs font-medium text-body">{{ language.level }}</span>{% endif %}
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+      </div>
       {% endif %}
     </div>
-    <div class="flex flex-col gap-[18px] md:min-w-[300px] md:flex-1">
-      <h1 class="font-display text-[38px] leading-[1.05] font-semibold tracking-display md:text-[52px]">{{ site.about_heading|default:site.site_name }}</h1>
+
+    <div class="mt-5 flex flex-col gap-5 border-t border-line pt-6 md:mt-8 md:max-w-[680px] md:pt-8">
       {% if site.about_bio %}
-        <div class="flex flex-col gap-4 text-base leading-[1.7] text-body-soft md:text-lg">{{ site.about_bio|linebreaks }}</div>
+        <div class="rich-text text-base leading-[1.7] text-body-soft md:text-lg">{{ site.about_bio|markdown }}</div>
       {% endif %}
       <div class="grid grid-cols-2 gap-2.5 md:flex md:flex-wrap md:gap-3 md:pt-1">
         {% if site.resume_pdf %}
@@ -88,7 +135,7 @@
       <article class="flex flex-col gap-1.5 rounded-card border border-line bg-surface p-5 md:gap-2.5 md:rounded-[18px] md:p-7">
         <span class="text-xs text-faint tabular-nums md:text-[13px]" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
         <h3 class="font-display text-[17px] font-semibold md:text-[19px] md:tracking-[-0.01em]">{{ service.title }}</h3>
-        <p class="text-sm leading-[1.55] text-body-soft md:text-[15px] md:leading-[1.6]">{{ service.description }}</p>
+        <div class="rich-text text-sm leading-[1.55] text-body-soft md:text-[15px] md:leading-[1.6]">{{ service.description|markdown }}</div>
       </article>
       {% endfor %}
     </div>

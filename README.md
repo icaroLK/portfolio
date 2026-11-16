@@ -51,7 +51,7 @@ The pages are plain Django templates styled with Tailwind, built from small reus
 - Experience cards with a work mode badge (On-site, Hybrid, Remote) and expandable details.
 - Education, skills, services and a contact form with spam protection.
 
-![About page](docs/screenshots/about.png)
+![About page](docs/screenshots/about-page.png)
 
 Every section can be hidden from the admin, and any empty field simply disappears from the page instead of leaving a gap.
 
@@ -59,7 +59,7 @@ Every section can be hidden from the admin, and any empty field simply disappear
 
 | Home | Project | About |
 | --- | --- | --- |
-| <img src="docs/screenshots/home-mobile.png" width="240" alt="Home on mobile"> | <img src="docs/screenshots/project-mobile.png" width="240" alt="Project page on mobile"> | <img src="docs/screenshots/about-mobile.png" width="240" alt="About page on mobile"> |
+| <img src="docs/screenshots/mobile-home.png" width="240" alt="Home on mobile"> | <img src="docs/screenshots/mobile-project.png" width="240" alt="Project page on mobile"> | <img src="docs/screenshots/mobile-about.png" width="240" alt="About page on mobile"> |
 
 ## The admin is the real product
 
@@ -83,7 +83,7 @@ The public pages are only half of the project. The other half is the panel I use
 
 **Contact inbox**
 
-![Admin contact inbox](docs/screenshots/admin-inbox.png)
+![Admin contact inbox](docs/screenshots/admin-inbox-list.png)
 
 ## Under the hood
 

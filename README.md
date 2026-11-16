@@ -18,7 +18,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/screenshots/home.png" width="900" alt="Home page">
+  <img src="docs/screenshots/home.jpeg" width="900" alt="Home page">
 </p>
 
 ---
@@ -44,7 +44,7 @@ The pages are plain Django templates styled with Tailwind, built from small reus
 - A gallery with a full-screen viewer: arrows, Escape and swipe all work.
 - A "Next project" card at the bottom, so visitors keep browsing.
 
-![Project page](docs/screenshots/project.png)
+![Project page](docs/screenshots/project.jpeg)
 
 **About**
 - Photo, quick facts with icons and a live local clock showing my time zone, languages with levels.
@@ -75,11 +75,11 @@ The public pages are only half of the project. The other half is the panel I use
 
 **Projects list:** drag-and-drop order, featured and published toggles
 
-![Admin projects list](docs/screenshots/admin-projects.png)
+![Admin projects list](docs/screenshots/admin-projects.jpeg)
 
 **Editing a project:** features, stack and gallery on one screen
 
-![Admin project edit page](docs/screenshots/admin-project-edit.png)
+![Admin project edit page](docs/screenshots/admin-project-edit.jpeg)
 
 **Contact inbox**
 

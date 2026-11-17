@@ -14,7 +14,7 @@ from pathlib import PurePosixPath
 from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.utils.html import format_html
-from PIL import Image, ImageOps
+from PIL import Image, ImageChops, ImageDraw, ImageOps
 
 logger = logging.getLogger(__name__)
 
@@ -27,8 +27,16 @@ SIZES = {
     "featured": (1200, "WEBP"),
     "gallery": (1600, "WEBP"),
     "share": (1200, "JPEG"),
+    "favicon": (64, "PNG"),
+    "touch_icon": (180, "PNG"),
 }
-EXTENSIONS = {"WEBP": ".webp", "JPEG": ".jpg"}
+EXTENSIONS = {"WEBP": ".webp", "JPEG": ".jpg", "PNG": ".png"}
+
+# Icons are cropped to a square from the center. The tab icon is also cut into a
+# circle, like the About photo. The iPhone icon stays square: iOS rounds the
+# corners itself and would show see-through corners as black.
+SQUARE = {"favicon", "touch_icon"}
+ROUND = {"favicon"}
 
 
 @dataclass(frozen=True)
@@ -67,7 +75,9 @@ def thumbnail(image, size):
             with storage.open(name) as stored:
                 width, height = Image.open(stored).size
         else:
-            content, width, height = render(image, max_width, image_format)
+            content, width, height = render(
+                image, max_width, image_format, square=size in SQUARE, round_=size in ROUND
+            )
             storage.save(name, ContentFile(content))
     except (OSError, ValueError) as error:
         logger.warning("Could not make %s thumbnail of %s: %s", size, image.name, error)
@@ -83,15 +93,23 @@ def thumb_name(original_name, size, image_format):
     return str(PurePosixPath("thumbs", size, path.parent, path.stem + EXTENSIONS[image_format]))
 
 
-def render(image, max_width, image_format):
-    """Resize (never enlarge) and encode. Returns (bytes, width, height)."""
+def render(image, max_width, image_format, square=False, round_=False):
+    """Resize and encode. Returns (bytes, width, height).
+
+    Normal sizes never enlarge. Square icons are always exactly max_width wide,
+    since browsers expect the size the <link> tag announces.
+    """
     with image.open("rb") as original, Image.open(original) as picture:
         picture = ImageOps.exif_transpose(picture)  # phone photos keep their rotation
-        if picture.width > max_width:
+        if square:
+            picture = ImageOps.fit(picture, (max_width, max_width), Image.Resampling.LANCZOS)
+        elif picture.width > max_width:
             height = round(picture.height * max_width / picture.width)
             picture = picture.resize((max_width, height), Image.Resampling.LANCZOS)
 
-        if image_format == "JPEG":
+        if round_:
+            picture = cut_circle(picture)
+        elif image_format == "JPEG" or square:
             picture = flatten(picture)
         elif picture.mode not in ("RGB", "RGBA"):
             picture = picture.convert("RGBA" if has_alpha(picture) else "RGB")
@@ -99,9 +117,23 @@ def render(image, max_width, image_format):
         buffer = BytesIO()
         if image_format == "WEBP":
             picture.save(buffer, "WEBP", quality=82, method=6)
+        elif image_format == "PNG":
+            picture.save(buffer, "PNG", optimize=True)
         else:
             picture.save(buffer, "JPEG", quality=85, optimize=True, progressive=True)
         return buffer.getvalue(), picture.width, picture.height
+
+
+def cut_circle(picture):
+    """Make everything outside the inscribed circle transparent, with a smooth edge."""
+    scale = 4  # draw the mask bigger, then shrink it, so the edge is not jagged
+    width, height = picture.size
+    mask = Image.new("L", (width * scale, height * scale), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, width * scale - 1, height * scale - 1), fill=255)
+    mask = mask.resize(picture.size, Image.Resampling.LANCZOS)
+    picture = picture.convert("RGBA")
+    picture.putalpha(ImageChops.multiply(picture.getchannel("A"), mask))
+    return picture
 
 
 def has_alpha(picture):

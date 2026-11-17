@@ -1,0 +1,7 @@
+{% load images %}{% comment %}
+  Tab icon and iPhone home-screen icon, made from the profile photo in Site settings.
+  A new photo gets a new file name, so browsers pick up the change by themselves.
+  No photo: no tags, and the browser shows its default icon.
+{% endcomment %}{% if site.profile_photo %}{% thumbnail site.profile_photo "favicon" as icon %}{% thumbnail site.profile_photo "touch_icon" as touch %}
+  <link rel="icon" type="image/png" sizes="64x64" href="{{ icon.url }}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{{ touch.url }}">{% endif %}
